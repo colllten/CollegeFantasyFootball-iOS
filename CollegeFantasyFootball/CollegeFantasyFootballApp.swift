@@ -11,7 +11,9 @@ import SwiftUI
 struct CollegeFantasyFootballApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            NavigationView {
+                RootView()
+            }
         }
     }
 }
