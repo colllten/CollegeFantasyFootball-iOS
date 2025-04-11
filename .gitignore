@@ -62,4 +62,4 @@ fastlane/screenshots/**/*.png
 fastlane/test_output
 
 # Files containing connection strings
-CollegeFantasyFootball/Secrets.swift
+*/Secrets.swift
