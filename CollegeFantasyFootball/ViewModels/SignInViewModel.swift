@@ -10,9 +10,9 @@ import SwiftUI
 
 class SignInViewModel: BaseViewModel {
     /// Email text entered by user
-    @Published var emailText = "ehodson1205@yahoo.com"
+    @Published var emailText = ""
     /// Password text entered by user
-    @Published var passwordText = "MochiMan10!"
+    @Published var passwordText = ""
     /// Flag to change view
     @Published var successfulLogin = false
     /// Starting position for views before animation
