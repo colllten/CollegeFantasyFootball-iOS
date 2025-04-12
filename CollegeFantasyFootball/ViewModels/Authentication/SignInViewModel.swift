@@ -42,9 +42,15 @@ class SignInViewModel: BaseViewModel {
     
     /// Attempts to log user in
     private func attemptLogin() async throws {
-        try await supabase
+        let session = try await supabase
             .auth
             .signIn(email: emailText, password: passwordText)
+        
+        UserDefaults
+            .standard
+            .set(
+                session.user.id.uuidString,
+                forKey: "userId")
     }
     
     /// Assigns a message string to present to user

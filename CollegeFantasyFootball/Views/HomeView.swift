@@ -9,7 +9,12 @@ import SwiftUI
 
 struct HomeView: View {
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        VStack {
+            Text("User ID: \(UserDefaults.standard.string(forKey: "userId") ?? "no ID")")
+            Button("Sign out") {
+                UserDefaults.standard.removeObject(forKey: "userId")
+            }
+        }
     }
 }
 

@@ -8,10 +8,10 @@
 import SwiftUI
 
 struct RootView: View {
-    let userId = UserDefaults.standard.string(forKey: "userId")
+    @State var userId = UserDefaults.standard.string(forKey: "userId")
     
     var body: some View {
-        if let userId, userId != "" {
+        if (userId != nil && userId! != "") {
             HomeView()
         } else {
             SignInView()
@@ -20,7 +20,7 @@ struct RootView: View {
 }
 
 #Preview {
-    NavigationView {
+    NavigationStack {
         RootView()
     }
 }
