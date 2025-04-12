@@ -8,10 +8,10 @@
 import SwiftUI
 
 struct RootView: View {
-    @State var userId = UserDefaults.standard.string(forKey: "userId")
+    @AppStorage("userId") var userId: String = ""
     
     var body: some View {
-        if (userId != nil && userId! != "") {
+        if userId != "" {
             HomeView()
         } else {
             SignInView()

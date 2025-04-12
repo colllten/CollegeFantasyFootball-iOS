@@ -61,14 +61,14 @@ class SignInViewModel: BaseViewModel {
         previewPrint("\(error)")
         
         alertMessage = switch error.errorCode {
+        case .validationFailed: fallthrough
         case .invalidCredentials: "Invalid email and/or password"
         case .identityNotFound: "No account exists with provided email"
         case .overRequestRateLimit: "Please wait 30 seconds to submit another login attempt"
         case .requestTimeout: "Login request expired. Please try again"
         case .unexpectedFailure,
                 .unknown,
-                .userNotFound,
-                .validationFailed: fallthrough
+                .userNotFound: fallthrough
         default: "Unknown error occurred. Please try again"
         }
         showAlert = true

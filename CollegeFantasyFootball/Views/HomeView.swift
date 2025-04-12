@@ -8,16 +8,20 @@
 import SwiftUI
 
 struct HomeView: View {
+    private var vm = HomeViewModel()
+    
     var body: some View {
         VStack {
             Text("User ID: \(UserDefaults.standard.string(forKey: "userId") ?? "no ID")")
             Button("Sign out") {
-                UserDefaults.standard.removeObject(forKey: "userId")
+                vm.signOut()
             }
         }
     }
 }
 
 #Preview {
-    HomeView()
+    NavigationStack {
+        HomeView()
+    }
 }
