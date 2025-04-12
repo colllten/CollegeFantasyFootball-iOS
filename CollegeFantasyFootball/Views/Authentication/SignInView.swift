@@ -76,7 +76,7 @@ struct SignInView: View {
     
     private var signUpNavigationLink: some View {
         NavigationLink {
-//            SignUpView(vm: SignUpViewModel(appUser: appUser))
+            SignUpView()
         } label: {
             Text("Rookies tap here")
                 .padding()

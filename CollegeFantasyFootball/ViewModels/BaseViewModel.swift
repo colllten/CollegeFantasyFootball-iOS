@@ -13,7 +13,7 @@ class BaseViewModel: ObservableObject {
     @Published var isLoading = false
     @Published var showAlert = false
     @Published var alertMessage = ""
-    let previewPrinting = true
+    private let previewPrinting = true
     
     func previewPrint(_ message: String) {
         if previewPrinting {
