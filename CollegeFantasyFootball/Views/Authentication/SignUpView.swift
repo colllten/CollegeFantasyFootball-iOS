@@ -72,10 +72,9 @@ struct SignUpView: View {
             Spacer()
         }
         .padding()
-//        .navigationDestination(isPresented: $vm.signUpSuccessful) {
-//            Text("hello")
-//                .navigationBarBackButtonHidden()
-//        }
+        .navigationDestination(isPresented: $vm.signUpSuccessful) {
+            HomeView()
+        }
     }
     
     private var signUpButton: some View {
