@@ -8,24 +8,21 @@
 import Foundation
 
 final class RootFantasyLeagueViewModel: BaseViewModel {
-    @Published var fantasyLeagueViewState = FantasyLeagueState.preDraft
-    var fantasyLeague: FantasyLeague
+    @Published var fantasyLeagueViewState = FantasyLeagueState.postDraft
     
-    init(fantasyLeague: FantasyLeague) {
-        self.fantasyLeague = fantasyLeague
-        
-        if Date.now < fantasyLeague.draftDate || (Date.now >= fantasyLeague.draftDate && !fantasyLeague.draftInProgress) {
+    public func setViewState(fantasyLeague: FantasyLeague) {
+        if !fantasyLeague.draftInProgress && !fantasyLeague.draftComplete {
             fantasyLeagueViewState = .preDraft
-        } else if Date.now >= fantasyLeague.draftDate && fantasyLeague.draftInProgress {
+        } else if fantasyLeague.draftInProgress {
             fantasyLeagueViewState = .draftInProgress
         } else {
             fantasyLeagueViewState = .postDraft
         }
     }
-    
-    enum FantasyLeagueState {
-        case preDraft
-        case draftInProgress
-        case postDraft
-    }
+}
+
+enum FantasyLeagueState {
+    case preDraft
+    case draftInProgress
+    case postDraft
 }

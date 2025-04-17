@@ -185,6 +185,21 @@ struct FantasyLeague: Codable {
         includeDefense: Bool = false,
         customizePoints: Bool = false
     ) {
-        
+        self.id = id
+        self.ownerId = ownerId.uuidString
+        self.currentSeason = currentSeason
+        self.leagueName = leagueName
+        self.draftInProgress = draftInProgress
+        self.draftComplete = draftComplete
+        self.draftDate = draftDate
     }
+    
+    static let mock = FantasyLeague(
+        id: UUID(uuidString: "831a296b-bf21-4017-8c46-92173971ed31")!,
+        ownerId: UUID(uuidString: "831a296b-bf21-4017-8c46-92173971ed31")!,
+        currentSeason: 2024,
+        leagueName: "Mock League Name",
+        draftDate: Calendar.current.date(byAdding: .day, value: 10, to: Date())!,
+        draftInProgress: false,
+        draftComplete: false)
 }
