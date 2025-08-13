@@ -8,16 +8,32 @@
 import SwiftUI
 
 struct RootView: View {
-    @AppStorage("userId") var userId: String = ""
+    @ObservedObject var auth = AuthManager.shared
+    @AppStorage("hasSeenOnboarding") var hasSeenOnboarding = false
     
     var body: some View {
-        if userId != "" {
-            HomeView()
-        } else {
-            SignInView()
+        Group {
+            if auth.isLoadingSession {
+                ProgressView("Loading…")
+                    .progressViewStyle(CircularProgressViewStyle())
+                    .animation(.default, value: auth.currentUser)
+            } else if auth.currentUser != nil {
+                if hasSeenOnboarding {
+                    HomeView(vm: HomeViewModel())
+                        .animation(.default, value: auth.currentUser)
+                } else {
+                    OnboardingView()
+                }
+            } else {
+                SignInView(vm: SignInViewModel())
+                    .animation(.default, value: auth.currentUser)
+            }
         }
+        .id(auth.currentUser?.id)
+        .animation(.default, value: auth.currentUser)
     }
 }
+
 
 #Preview {
     NavigationStack {

@@ -9,37 +9,34 @@ import Foundation
 import Supabase
 
 class SignUpViewModel: BaseViewModel {
-    @Published var emailText = ""
-    @Published var usernameText: String = ""
-    @Published var passwordText = ""
-    @Published var confirmPasswordText = ""
-    /// Triggers if next view should appear
-    @Published var signUpSuccessful = false
+    @Published var emailText = "tester99@gmail.com"
+    @Published var usernameText: String = "tester99"
+    @Published var passwordText = "tester99"
+    @Published var confirmPasswordText = "tester99"
     
-    /// Minimum username length
     private let USERNAME_MIN_LEN: UInt8 = 3
-    /// Maximum username length
     private let USERNAME_MAX_LEN: UInt8 = 31
     
     /// Sends sign up request to auth provider to create user
-    public func attemptSignUp() async {
+    public func attemptSignUp() async -> Bool {
         LoggingManager
-            .general
-            .info("Attempting to sign up user with email \(self.emailText)")
-        previewPrint("Attempting to sign up user with email \(self.emailText)")
+            .logInfo("Attempting to sign up user with email \(self.emailText)")
         
         isLoading = true
+        usernameText = usernameText.trimmingCharacters(in: .whitespacesAndNewlines)
+        emailText = emailText.trimmingCharacters(in: .whitespacesAndNewlines)
         
         let formHasValidInputs = await validateUserInputs()
         if (!formHasValidInputs) {
             isLoading = false
-            return
+            return false
         }
         
         do {
-            try await signUp()
-            try await addUserToTable()
-            signUpSuccessful = true
+            let id = try await signUp()
+            try await addUserToDatabase(id: id)
+            
+            return true
         } catch let error as AuthError {
             handleAuthError(error)
         } catch {
@@ -47,12 +44,12 @@ class SignUpViewModel: BaseViewModel {
         }
         
         isLoading = false
+        return false
     }
     
-    private func signUp() async throws {
+    private func signUp() async throws -> UUID {
         LoggingManager
-            .general
-            .info("Submitting sign up data")
+            .logInfo("Submitting sign up data")
         
         let session = try await supabase
             .auth
@@ -60,34 +57,25 @@ class SignUpViewModel: BaseViewModel {
                 email: emailText,
                 password: passwordText,
                 data: ["username" : .string(usernameText)])
-        
-        setUserId(session.user.id)
-        previewPrint("successful sign up for \(emailText)")
+        return session.user.id
     }
     
-    private func addUserToTable() async throws {
+    private func addUserToDatabase(id: UUID) async throws {
         LoggingManager
-            .general
-            .info("Adding user \(self.usernameText) to table")
+            .logInfo("Adding user \(self.usernameText) to database")
         
         try await supabase
             .from("User")
             .insert([
-                "id" : UserDefaults.standard.string(forKey: "userId"),
+                "id" : id.uuidString,
                 "username" : self.usernameText
             ])
             .execute()
     }
     
-    private func setUserId(_ id: UUID) {
-        UserDefaults.standard.set(id.uuidString, forKey: "userId")
-    }
-    
     private func handleAuthError(_ error: AuthError) {
         LoggingManager
-            .general
-            .error("AuthError occurred while signing up: \(error)")
-        previewPrint("AuthError occurred while signing up: \(error)")
+            .logError("AuthError occurred while signing up: \(error)")
         
         alertMessage = switch (error.errorCode) {
         case .emailExists, .userAlreadyExists:
@@ -105,9 +93,7 @@ class SignUpViewModel: BaseViewModel {
     
     private func handleError(_ error: Error) {
         LoggingManager
-            .general
-            .error("Error occurred while signing up: \(error)")
-        previewPrint("Error occurred while signing up: \(error)")
+            .logError("Error occurred while signing up: \(error)")
         
         alertMessage = "Error occurred while signing up. Please try again"
         showAlert = true
@@ -115,23 +101,41 @@ class SignUpViewModel: BaseViewModel {
     
     /// Checks all fields are valid before sending to auth provider
     private func validateUserInputs() async -> Bool {
+        LoggingManager
+            .logInfo("Validating form inputs")
+        
         if !emailMatchesRegEx() {
+            LoggingManager
+                .logWarning("Invalid email: \(emailText)")
+            
             alertMessage = "Invalid email"
             showAlert = true
             return false
         } else if !usernameIsWithinRange() {
+            LoggingManager
+                .logWarning("Invalid username length: \(usernameText.count)")
+            
             alertMessage = "Invalid username length"
             showAlert = true
             return false
         } else if !usernameContainsOnlyAlphanumerics() {
+            LoggingManager
+                .logWarning("Username contains invalid characters: \(usernameText)")
+            
             alertMessage = "Username contains invalid characters"
             showAlert = true
             return false
         } else if await !usernameIsUnique() {
+            LoggingManager
+                .logWarning("Username is not unique: \(usernameText)")
+            
             alertMessage = "Username is already in use"
             showAlert = true
             return false
         } else if !passwordAndConfirmPasswordMatch() {
+            LoggingManager
+                .logWarning("Passwords do not match")
+            
             alertMessage = "Passwords do not match"
             showAlert = true
             return false
@@ -142,6 +146,9 @@ class SignUpViewModel: BaseViewModel {
     
     /// Validates an email is valid to be sent to DB
     private func emailMatchesRegEx() -> Bool {
+        LoggingManager
+            .logInfo("Comparing email to regex format")
+        
         let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
         let emailPred = NSPredicate(format:"SELF MATCHES %@", emailRegEx)
         
@@ -150,6 +157,9 @@ class SignUpViewModel: BaseViewModel {
     
     /// Checks if given username is within length range
     private func usernameIsWithinRange() -> Bool {
+        LoggingManager
+            .logInfo("Checking if username is within length")
+        
         return (usernameText.count >= USERNAME_MIN_LEN) &&
                (usernameText.count <= USERNAME_MAX_LEN)
     }
@@ -157,6 +167,8 @@ class SignUpViewModel: BaseViewModel {
     /// Checks if a given username contains alphanumeric characters only
     /// WARNING: A reasonable length must be known before calling this function
     private func usernameContainsOnlyAlphanumerics() -> Bool {
+        LoggingManager
+            .logInfo("Checking if username contains only alphanumeric characters")
         let alphaNumRegEx = "[A-Z0-9a-z]+"
         let alphaNumPred = NSPredicate(format:"SELF MATCHES %@", alphaNumRegEx)
         
@@ -165,6 +177,8 @@ class SignUpViewModel: BaseViewModel {
     
     /// Checks if username is unique by calling database to ensure username is not in use
     private func usernameIsUnique() async -> Bool {
+        LoggingManager
+            .logInfo("Checking if username is unique")
         do {
             let data: [[String : String]] = try await supabase
                 .from("User")
@@ -175,14 +189,16 @@ class SignUpViewModel: BaseViewModel {
             
             return data.count == 0
         } catch {
-            LoggingManager.general.error("Error fetching usernames: \(error)")
-            print(error)
+            LoggingManager
+                .logError("Error fetching usernames: \(error)")
             return false
         }
     }
     
     /// Checks if ``passwordText`` and ``confirmPasswordText`` match
     private func passwordAndConfirmPasswordMatch() -> Bool {
+        LoggingManager
+            .logInfo("Checking if passwords match")
         return passwordText == confirmPasswordText
     }
 }

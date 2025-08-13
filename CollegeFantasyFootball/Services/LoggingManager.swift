@@ -9,18 +9,25 @@ import Foundation
 import os
 
 /// Static class for managing loggers
-class LoggingManager {
+@MainActor
+public class LoggingManager {
     private static let subsystem = "com.coltenglover"
     
     /// General logger for events occurring in view models, etc.
-    static let general = Logger(subsystem: subsystem, category: "General")
+    private static let general = Logger(subsystem: subsystem, category: "General")
     
-    /// Logger for communications to Supabase
-    static let database = Logger(subsystem: subsystem, category: "Database")
+    public static func logInfo(_ message: String) {
+        BaseViewModel.previewPrint(message)
+        general.info("\(message)")
+    }
     
-    /// Logger for communications over network (API calls, etc.)
-    static let network = Logger(subsystem: subsystem, category: "Network")
+    public static func logWarning(_ message: String) {
+        BaseViewModel.previewPrint(message)
+        general.warning("\(message)")
+    }
     
-    /// Logger for UI events
-    static let ui = Logger(subsystem: subsystem, category: "UI")
+    public static func logError(_ message: String) {
+        BaseViewModel.previewPrint(message)
+        general.error("\(message)")
+    }
 }

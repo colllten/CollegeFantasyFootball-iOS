@@ -8,8 +8,10 @@
 import SwiftUI
 
 struct SignUpView: View {
+    @Environment(\.dismiss) var dismiss
+    
     @ObservedObject var vm = SignUpViewModel()
-    /// Tracks which field is active; used for focusing to next field
+    
     @FocusState private var focusedField: Field?
     @State private var showFields = false
 
@@ -25,7 +27,7 @@ struct SignUpView: View {
                 Spacer()
                 
                 CustomTextField(placeholder: "Username", text: $vm.usernameText)
-                    .keyboardType(.asciiCapable)
+                    .keyboardType(.alphabet)
                     .submitLabel(.next)
                     .onSubmit {
                         focusedField = .email
@@ -54,7 +56,6 @@ struct SignUpView: View {
                     .submitLabel(.done)
                     .focused($focusedField, equals: .confirmPassword)
                 
-                Spacer()
                 signUpButton
                 Spacer()
             }
@@ -72,15 +73,15 @@ struct SignUpView: View {
             Spacer()
         }
         .padding()
-        .navigationDestination(isPresented: $vm.signUpSuccessful) {
-            HomeView()
-        }
     }
     
     private var signUpButton: some View {
         Button {
             Task {
-                await vm.attemptSignUp()
+                let signUpSuccess = await vm.attemptSignUp()
+                if signUpSuccess {
+                    dismiss()
+                }
             }
         } label: {
             Text("Submit")
@@ -93,41 +94,17 @@ struct SignUpView: View {
     }
 }
 
-/// Extension to add focus on each text field for user to navigate to next one
 extension SignUpView {
     private enum Field: Int, CaseIterable {
-        case username, email, password, confirmPassword
-    }
-    
-    private func focusPreviousField() {
-        focusedField = focusedField.map {
-            Field(rawValue: $0.rawValue - 1) ?? .confirmPassword
-        }
-    }
-
-    private func focusNextField() {
-        focusedField = focusedField.map {
-            Field(rawValue: $0.rawValue + 1) ?? .username
-        }
-    }
-    
-    private func canFocusPreviousField() -> Bool {
-        guard let currentFocusedField = focusedField else {
-            return false
-        }
-        return currentFocusedField.rawValue > 0
-    }
-
-    private func canFocusNextField() -> Bool {
-        guard let currentFocusedField = focusedField else {
-            return false
-        }
-        return currentFocusedField.rawValue < Field.allCases.count - 1
+        case username
+        case email
+        case password
+        case confirmPassword
     }
 }
 
 #Preview {
-    NavigationView {
+    NavigationStack {
         SignUpView()
     }
 }

@@ -8,33 +8,27 @@
 import SwiftUI
 
 struct RootFantasyLeagueView: View {
-    let fantasyLeague: FantasyLeague
-    @ObservedObject var vm: RootFantasyLeagueViewModel
-    
-    init(fantasyLeague: FantasyLeague) {
-        self.fantasyLeague = fantasyLeague
-        let viewModel = RootFantasyLeagueViewModel()
-        viewModel.setViewState(fantasyLeague: fantasyLeague)
-        self.vm = viewModel
-    }
+    @ObservedObject var rootVm: RootFantasyLeagueViewModel
+    @ObservedObject var draftVm: DraftViewModel
     
     var body: some View {
         ZStack {
-            switch (vm.fantasyLeagueViewState) {
+            switch (rootVm.fantasyLeagueViewState) {
             case .preDraft:
-                Text("pre")
+                PreDraftView(vm: PreDraftViewModel(fantasyLeague: rootVm.fantasyLeague))
             case .draftInProgress:
-                Text("during")
+                DraftView(vm: draftVm)
+//                NewDraftView(vm: NewDraftViewModel(fantasyLeague: rootVm.fantasyLeague))
             case .postDraft:
-                Text("post")
+                FantasyLeagueView(fantasyLeague: rootVm.fantasyLeague)
             }
-        }
-        .onAppear {
-            vm.setViewState(fantasyLeague: fantasyLeague)
         }
     }
 }
 
 #Preview {
-    RootFantasyLeagueView(fantasyLeague: FantasyLeague.mock)
+    NavigationStack {
+        RootFantasyLeagueView(rootVm: RootFantasyLeagueViewModel(fantasyLeague: FantasyLeague.mock),
+            draftVm: DraftViewModel(fantasyLeague: FantasyLeague.mock))
+    }
 }

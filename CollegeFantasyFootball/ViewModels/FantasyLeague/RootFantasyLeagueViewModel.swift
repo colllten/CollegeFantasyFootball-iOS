@@ -8,9 +8,12 @@
 import Foundation
 
 final class RootFantasyLeagueViewModel: BaseViewModel {
-    @Published var fantasyLeagueViewState = FantasyLeagueState.postDraft
+    var fantasyLeague: FantasyLeague
+    var fantasyLeagueViewState: FantasyLeagueState
     
-    public func setViewState(fantasyLeague: FantasyLeague) {
+    init(fantasyLeague: FantasyLeague) {
+        self.fantasyLeague = fantasyLeague
+        
         if !fantasyLeague.draftInProgress && !fantasyLeague.draftComplete {
             fantasyLeagueViewState = .preDraft
         } else if fantasyLeague.draftInProgress {

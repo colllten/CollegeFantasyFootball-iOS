@@ -7,13 +7,13 @@
 
 import Foundation
 
-struct FantasyLeague: Codable {
+public struct FantasyLeague: Codable {
     /// Unique ID
-    var id = UUID()
+    let id: UUID
     /// User ID of the fantasy league owner
     var ownerId = ""
     /// Current fantasy league season
-    var currentSeason = 2024
+    var currentSeason = 2025
     /// Name of the fantasy league
     var leagueName = ""
     /// Date of draft
@@ -25,7 +25,7 @@ struct FantasyLeague: Codable {
     
     // MARK: Fantasy league settings
     // TODO: Change all below to LET?
-    var ppr: Bool = true {
+    var ppr: Bool = false {
         didSet {
             if !ppr {
                 pointsPerRec = 0.0
@@ -46,8 +46,8 @@ struct FantasyLeague: Codable {
     var pointsPer10RushYds = 1.0
     var pointsPerRushTd = 4.0
     // WR/TE STATS
-    var pointsPerRec = 1.0
-    var pointsPerRecYd = 1.0
+    var pointsPerRec = 0.0
+    var pointsPerRecYd = 0.0
     var pointsPer10RecYds = 1.0
     var pointsPerRecTd = 4.0
     // K/P STATS
@@ -126,30 +126,7 @@ struct FantasyLeague: Codable {
         case includePunters = "include_punters"
         case includeKickers = "include_kickers"
     }
-    
-    static let dateFormatter: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd"
-        formatter.timeZone = TimeZone(secondsFromGMT: 0)
-        formatter.locale = Locale(identifier: "en_US_POSIX")
-        return formatter
-    }()
-    
-    init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        id = try container.decode(UUID.self, forKey: .id)
-        ownerId = try container.decode(String.self, forKey: .ownerId)
-        leagueName = try container.decode(String.self, forKey: .leagueName)
         
-        let draftDateString = try container.decode(String.self, forKey: .draftDate)
-        guard let date = FantasyLeague.dateFormatter.date(from: draftDateString) else {
-            throw DecodingError.dataCorruptedError(forKey: .draftDate, in: container, debugDescription: "Invalid date format")
-        }
-        draftDate = date
-    }
-    
-    init(){}
-    
     init(
         id: UUID,
         ownerId: UUID,
@@ -195,11 +172,28 @@ struct FantasyLeague: Codable {
     }
     
     static let mock = FantasyLeague(
-        id: UUID(uuidString: "831a296b-bf21-4017-8c46-92173971ed31")!,
-        ownerId: UUID(uuidString: "831a296b-bf21-4017-8c46-92173971ed31")!,
-        currentSeason: 2024,
-        leagueName: "Mock League Name",
+        id: UUID(uuidString: "ad7a1787-544f-4af2-a623-1f60ce0ce188")!,
+        ownerId: UUID(uuidString: "db721dfe-ed19-4d09-8ce8-5ef199662390")!,
+        currentSeason: 2025,
+        leagueName: "Test League",
         draftDate: Calendar.current.date(byAdding: .day, value: 10, to: Date())!,
         draftInProgress: false,
         draftComplete: false)
+    
+    static let newLeague = FantasyLeague(
+        id: UUID(),
+        ownerId: UUID(),
+        currentSeason: 2025,
+        leagueName: "",
+        draftDate: Calendar.current.date(byAdding: .day, value: 10, to: Date())!)
+}
+
+
+extension FantasyLeague {
+    private static let dateFormatter: ISO8601DateFormatter = {
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        formatter.timeZone = TimeZone.current // send with your local timezone offset
+        return formatter
+    }()
 }
