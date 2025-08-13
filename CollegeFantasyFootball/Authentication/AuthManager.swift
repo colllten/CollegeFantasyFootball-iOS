@@ -75,6 +75,17 @@ class AuthManager: BaseViewModel {
         currentUser = session.user
     }
     
+    func signUp(email: String, password: String, username: String) async throws -> AuthResponse {
+        LoggingManager
+            .logInfo("Signing up user")
+        
+        return try await supabase
+            .auth
+            .signUp(email: email,
+                    password: password,
+                    data: ["username" : .string(username)])
+    }
+    
     /// Signs the user out
     func signOut() async {
         LoggingManager

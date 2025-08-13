@@ -9,10 +9,10 @@ import Foundation
 import Supabase
 
 class SignUpViewModel: BaseViewModel {
-    @Published var emailText = "tester99@gmail.com"
-    @Published var usernameText: String = "tester99"
-    @Published var passwordText = "tester99"
-    @Published var confirmPasswordText = "tester99"
+    @Published var emailText = ""
+    @Published var usernameText: String = ""
+    @Published var passwordText = ""
+    @Published var confirmPasswordText = ""
     
     private let USERNAME_MIN_LEN: UInt8 = 3
     private let USERNAME_MAX_LEN: UInt8 = 31
@@ -23,8 +23,11 @@ class SignUpViewModel: BaseViewModel {
             .logInfo("Attempting to sign up user with email \(self.emailText)")
         
         isLoading = true
+        defer { isLoading = false }
+        
         usernameText = usernameText.trimmingCharacters(in: .whitespacesAndNewlines)
         emailText = emailText.trimmingCharacters(in: .whitespacesAndNewlines)
+        usernameText = usernameText.trimmingCharacters(in: .whitespacesAndNewlines)
         
         let formHasValidInputs = await validateUserInputs()
         if (!formHasValidInputs) {
@@ -33,9 +36,11 @@ class SignUpViewModel: BaseViewModel {
         }
         
         do {
-            let id = try await signUp()
-            try await addUserToDatabase(id: id)
+            let authResponse = try await signUp()
             
+            // TODO: Add guard statement to protect empty username
+            try await addUserToDatabase(id: authResponse.user.id,
+                                        username: authResponse.user.userMetadata["username"]?.stringValue ?? "")
             return true
         } catch let error as AuthError {
             handleAuthError(error)
@@ -47,28 +52,25 @@ class SignUpViewModel: BaseViewModel {
         return false
     }
     
-    private func signUp() async throws -> UUID {
+    private func signUp() async throws -> AuthResponse {
         LoggingManager
             .logInfo("Submitting sign up data")
         
-        let session = try await supabase
-            .auth
-            .signUp(
-                email: emailText,
-                password: passwordText,
-                data: ["username" : .string(usernameText)])
-        return session.user.id
+        return try await AuthManager.shared.signUp(email: emailText,
+                                                   password: passwordText,
+                                                   username: usernameText)
     }
     
-    private func addUserToDatabase(id: UUID) async throws {
+    private func addUserToDatabase(id: UUID,
+                                   username: String) async throws {
         LoggingManager
-            .logInfo("Adding user \(self.usernameText) to database")
+            .logInfo("Adding user \(id) (\(self.usernameText)) to database")
         
         try await supabase
             .from("User")
             .insert([
                 "id" : id.uuidString,
-                "username" : self.usernameText
+                "username" : username
             ])
             .execute()
     }
