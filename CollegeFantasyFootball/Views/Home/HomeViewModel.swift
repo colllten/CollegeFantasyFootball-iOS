@@ -24,6 +24,9 @@ class HomeViewModel: BaseViewModel {
     var weeks = 1...10
     
     @Published var hasUnansweredNotifications = false
+    
+    @Published var updateAlertMessage = ""
+    @Published var showUpdateAlert = false
         
     public func loadData() async {
         LoggingManager
@@ -31,6 +34,12 @@ class HomeViewModel: BaseViewModel {
         
         isLoading = true
         do {
+            let appMetadata = try await fetchLatestAppMetadata()
+            if let currentAppVersion = UIApplication.appVersion,
+               currentAppVersion < appMetadata.version {
+                throw AppVersionError.OUTDATED_VERSION
+            }
+            
             let leagueIds = try await fetchUserAffilliatedFantasyLeagueIds()
             fantasyLeagues = try await supabase
                 .from("FantasyLeague")
@@ -42,6 +51,9 @@ class HomeViewModel: BaseViewModel {
             games = try await fetchSchedules()
             
             hasUnansweredNotifications = try await fetchHasNotifications()
+        } catch AppVersionError.OUTDATED_VERSION {
+            updateAlertMessage = "Your version of the app is outdated. Please update in the App Store"
+            showUpdateAlert = true
         } catch {
             LoggingManager
                 .logError("Error fetching fantasy leagues: \(error)")
@@ -71,6 +83,27 @@ class HomeViewModel: BaseViewModel {
                 .logError("Error fetching team logo URL for team \(teamId)")
             return nil
         }
+    }
+    
+    private func fetchLatestAppMetadata() async throws -> AppMetadata {
+        LoggingManager
+            .logInfo("Fetching latest app metadata")
+        
+        isLoading = true
+        defer { isLoading = false }
+        
+        let metadatas: [AppMetadata] = try await supabase
+            .from("AppMetadata")
+            .select()
+            .execute()
+            .value
+        
+        print(UIApplication.appVersion)
+        print(metadatas)
+        
+        return metadatas.max { m1, m2 in
+            m1.version > m2.version
+        }!
     }
     
     private func fetchUserAffilliatedFantasyLeagueIds() async throws -> [String] {

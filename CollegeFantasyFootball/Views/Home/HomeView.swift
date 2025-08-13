@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import StoreKit
 
 struct HomeView: View {
     @StateObject var vm: HomeViewModel
@@ -66,6 +67,14 @@ struct HomeView: View {
         } message: {
             Text(vm.alertMessage)
         }
+        .alert(vm.updateAlertMessage, isPresented: $vm.showUpdateAlert, actions: {
+            Button {
+                let url = URL(string: "itms-apps://itunes.apple.com/")
+                UIApplication.shared.open(url!)
+            } label: {
+                Text("App Store")
+            }
+        })
         .withLoading(vm.isLoading)
     }
     
