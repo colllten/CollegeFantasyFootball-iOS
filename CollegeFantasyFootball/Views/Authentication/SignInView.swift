@@ -18,10 +18,10 @@ struct SignInView: View {
         VStack {
             Spacer()
             
-            AnimatedHeader(text: "Welcome", offset: vm.positionOffset)
+            Text("Welcome")
+                .font(.largeTitle.bold())
             
             LoginForm
-                .opacity(vm.opacity)
                 .padding(.horizontal, 30)
             
             Spacer()
@@ -30,16 +30,8 @@ struct SignInView: View {
                 Text("Rookies tap here")
                     .padding()
             }
-            .opacity(vm.opacity)
         }
         .navigationBarBackButtonHidden()
-        .onAppear {
-            withAnimation(.none) {
-                vm.positionOffset = 40
-                vm.opacity = 0
-            }
-            vm.animateEntrance() // plays up + fade-in
-        }
         .alert(vm.alertMessage, isPresented: $vm.showAlert) { }
     }
     
@@ -68,19 +60,6 @@ struct SignInView: View {
     }
 }
 
-// MARK: - Animated Header Subview
-
-struct AnimatedHeader: View {
-    let text: String
-    let offset: CGFloat
-    
-    var body: some View {
-        Text(text)
-            .font(.largeTitle.bold())
-            .offset(y: offset) // no implicit .animation here
-    }
-}
-
 // MARK: - Reusable Button Style Modifier
 
 extension View {
@@ -91,21 +70,6 @@ extension View {
             .background(background)
             .foregroundStyle(foreground)
             .cornerRadius(8)
-    }
-}
-
-// MARK: - ViewModel Animation Helper
-
-extension SignInViewModel {
-    func animateEntrance() {
-        withAnimation(.easeInOut(duration: 1)) {
-            positionOffset = 0
-        }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-            withAnimation(.easeInOut(duration: 1.2)) {
-                self.opacity = 1
-            }
-        }
     }
 }
 
