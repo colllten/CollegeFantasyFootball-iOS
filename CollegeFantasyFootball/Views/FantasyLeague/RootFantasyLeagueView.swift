@@ -18,7 +18,6 @@ struct RootFantasyLeagueView: View {
                 PreDraftView(vm: PreDraftViewModel(fantasyLeague: rootVm.fantasyLeague))
             case .draftInProgress:
                 DraftView(vm: draftVm)
-//                NewDraftView(vm: NewDraftViewModel(fantasyLeague: rootVm.fantasyLeague))
             case .postDraft:
                 FantasyLeagueView(fantasyLeague: rootVm.fantasyLeague)
             }
