@@ -7,20 +7,24 @@
 
 import Foundation
 import SwiftUI
-import SwiftUICore
+//import SwiftUICore
 
 struct LoadingModifier: ViewModifier {
     let isLoading: Bool
     
     func body(content: Content) -> some View {
-        ZStack {
-            if isLoading {
-                CustomProgressView()
-            } else {
-                content
+            ZStack {
+                content // always keep the content present
+                    .disabled(isLoading) // optional: prevent interaction
+                    .blur(radius: isLoading ? 2 : 0) // optional visual cue
+                
+                if isLoading {
+                    Color.black.opacity(0.4)
+                        .ignoresSafeArea()
+                    CustomProgressView()
+                }
             }
         }
-    }
 }
 
 
