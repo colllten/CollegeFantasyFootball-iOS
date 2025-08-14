@@ -36,6 +36,9 @@ struct ProfileView: View {
             Spacer()
             signOutButton
                 .padding(.top, 8)
+            
+            deleteAccountButton
+                .padding(.top, 8)
         }
         .padding()
         .navigationTitle("Profile")
@@ -57,6 +60,25 @@ struct ProfileView: View {
             }
         } label: {
             Text("Sign Out")
+                .font(.headline)
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(Color.orange)
+                .foregroundColor(.white)
+                .cornerRadius(12)
+        }
+    }
+    
+    private var deleteAccountButton: some View {
+        Button {
+            Task {
+                let success = await vm.deleteAccountButtonPressed()
+                if success {
+                    dismiss()
+                }
+            }
+        } label: {
+            Text("Delete Account")
                 .font(.headline)
                 .frame(maxWidth: .infinity)
                 .padding()

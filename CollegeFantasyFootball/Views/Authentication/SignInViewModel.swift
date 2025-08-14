@@ -20,6 +20,7 @@ class SignInViewModel: BaseViewModel {
             .logInfo("Submitting email-password login for email \(self.emailText)")
         
         isLoading = true
+        defer {isLoading = false}
         do {
             cleanInputs()
             try await AuthManager
@@ -28,14 +29,17 @@ class SignInViewModel: BaseViewModel {
             
             LoggingManager.logInfo("Successful login")
         } catch let err as AuthError {
-            setAlertMessage(authError: err)
-            showAlert = true
+            await MainActor.run {
+                setAlertMessage(authError: err)
+                showAlert = true
+            }
         } catch {
-            setAlertMessage(error: error)
-            showAlert = true
+            await MainActor.run {
+                setAlertMessage(error: error)
+                showAlert = true
+            }
         }
-        
-        isLoading = false
+
     }
     
     private func attemptLogin() async throws -> Session {
@@ -65,6 +69,10 @@ class SignInViewModel: BaseViewModel {
                 .unknown: fallthrough
         default: "Unknown error occurred. Please try again"
         }
+        
+        // Debug logging
+            print("Debug: Alert message set to: \(alertMessage)")
+            print("Debug: showAlert will be set to true")
     }
     
     private func setAlertMessage(error: Error) {

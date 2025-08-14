@@ -35,6 +35,22 @@ class ProfileViewModel: BaseViewModel {
         return true
     }
     
+    public func deleteAccountButtonPressed() async -> Bool {
+        LoggingManager
+            .logInfo("Deleting account \(user.id)")
+        
+        do {
+            try await AuthManager.shared.deleteAccount()
+            return true
+        } catch {
+            LoggingManager
+                .logError("Error deleting account: \(error)")
+            alertMessage = "Error deleting account. Please reach out to the developers."
+            showAlert = true
+        }
+        return false
+    }
+    
     private func fetchUserData() async throws -> User {
         LoggingManager
             .logInfo("Fetching user data")

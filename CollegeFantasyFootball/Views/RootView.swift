@@ -25,7 +25,7 @@ struct RootView: View {
                     OnboardingView()
                 }
             } else {
-                SignInView(vm: SignInViewModel())
+                SignInView()
                     .animation(.default, value: auth.currentUser)
             }
         }

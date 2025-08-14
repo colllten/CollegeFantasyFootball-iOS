@@ -101,6 +101,63 @@ class AuthManager: BaseViewModel {
         currentUser = nil
     }
     
+    func deleteAccount() async throws {
+        let userId = currentUserId!
+        currentUser = nil
+        UserDefaults.standard.removeObject(forKey: sessionKey)
+        let session = supabase.auth.currentSession
+        try await supabase
+            .from("User")
+            .delete()
+            .eq("id", value: userId)
+            .execute()
+        
+        // Delete the user from the database first
+        try await deleteWithEdge(session: session)
+        
+        // After successful deletion, sign out locally to clear the session
+        try await supabase.auth.signOut()
+        
+        // Clear any local user data
+        currentUser = nil
+    }
+
+    private func deleteWithEdge(session: Session?) async throws {
+        let accessToken = session?.accessToken ?? ""
+        
+        print("Debug: Access token length: \(accessToken.count)")
+        print("Debug: Access token preview: \(String(accessToken.prefix(20)))...")
+        
+        // 1. Edge Function URL
+        let url = URL(string: "https://hebkomjefcdetcamnnpa.supabase.co/functions/v1/delete-user")!
+        
+        // 3. Build the request with Bearer token
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = try JSONSerialization.data(withJSONObject: [:])
+        
+        print("Debug: Request headers: \(request.allHTTPHeaderFields ?? [:])")
+        
+        // 4. Call the Edge Function
+        let (data, response) = try await URLSession.shared.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw URLError(.badServerResponse)
+        }
+        
+        if httpResponse.statusCode != 200 {
+            let errorMessage = String(data: data, encoding: .utf8) ?? "Unknown error"
+            print("Debug: HTTP Status: \(httpResponse.statusCode)")
+            print("Debug: Response data: \(errorMessage)")
+            throw NSError(domain: "EdgeFunctionError", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: errorMessage])
+        }
+        
+        LoggingManager.logInfo("User deleted successfully: \(String(data: data, encoding: .utf8) ?? "")")
+    }
+
+    
     /// Refresh session token if needed
     func refreshSession() async {
         LoggingManager
