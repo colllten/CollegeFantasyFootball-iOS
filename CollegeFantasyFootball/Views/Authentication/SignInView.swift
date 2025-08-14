@@ -6,7 +6,7 @@
 import SwiftUI
 
 struct SignInView: View {
-    @ObservedObject var vm: SignInViewModel
+    @StateObject var vm = SignInViewModel()
     @FocusState var focusedField: Field?
     
     enum Field {
@@ -32,7 +32,9 @@ struct SignInView: View {
             }
         }
         .navigationBarBackButtonHidden()
-        .alert(vm.alertMessage, isPresented: $vm.showAlert) { }
+        .alert(vm.alertMessage, isPresented: $vm.showAlert) {
+            Button("OK", role: .cancel) { }
+        }
     }
     
     private var LoginForm: some View {
