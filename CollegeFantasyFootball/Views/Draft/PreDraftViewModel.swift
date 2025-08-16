@@ -145,8 +145,9 @@ class PreDraftViewModel: BaseViewModel {
         while attempts < 10 {
             let picks: [DraftViewModel.DraftPicksResponse] = try await supabase
                 .from("DraftPicks")
-                .select("league_id, user_id, round, pick, player_id, User!inner(username)")
+                .select("league_id, user_id, round, pick, player_id, season, User!inner(username)")
                 .eq("league_id", value: fantasyLeague.id.uuidString)
+                .eq("season", value: season)
                 .execute()
                 .value
             

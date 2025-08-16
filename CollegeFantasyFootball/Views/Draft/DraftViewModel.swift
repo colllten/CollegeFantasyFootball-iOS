@@ -185,6 +185,7 @@ class DraftViewModel: BaseViewModel {
                 User!inner(username)
             """)
             .eq("league_id", value: fantasyLeague.id)
+            .eq("season", value: season)
             .execute()
             .value
 
