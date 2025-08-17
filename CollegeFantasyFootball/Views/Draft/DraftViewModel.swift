@@ -201,6 +201,11 @@ class DraftViewModel: BaseViewModel {
             try await draftPlayer(playerId: playerId)
             // Remove from user's draft board
             try await removeFromDraftBoard(playerId: playerId)
+        } catch DraftError.PLAYER_DRAFTED {
+            LoggingManager
+                .logWarning("Player already drafted: \(playerId)")
+            alertMessage = "Player previously drafted"
+            showAlert = true
         } catch {
             LoggingManager
                 .logError("Error drafting player \(playerId): \(error)")
@@ -350,6 +355,20 @@ class DraftViewModel: BaseViewModel {
             alertMessage = "It is not your turn to draft"
             showAlert = true
             return
+        }
+        
+        let isDrafted = try await supabase
+            .from("DraftPicks")
+            .select(count: .exact)
+            .eq("player_id", value: playerId)
+            .eq("league_id", value: fantasyLeague.id)
+            .eq("season", value: season)
+            .execute()
+            .count ?? 0 > 0
+        
+        if isDrafted {
+            try await removeFromDraftBoard(playerId: playerId)
+            throw DraftError.PLAYER_DRAFTED
         }
         
         try await supabase

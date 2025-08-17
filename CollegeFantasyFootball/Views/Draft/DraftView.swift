@@ -9,6 +9,7 @@ import SwiftUI
 import Supabase
 
 struct DraftView: View {
+    @Environment(\.scenePhase) private var scenePhase
     @State private var selectedTab: DraftTab = .draft
     @StateObject var vm: DraftViewModel
     
@@ -41,6 +42,19 @@ struct DraftView: View {
         .task {
             await vm.loadData()
             await vm.trySubscribeRealtime()
+        }
+        .onChange(of: scenePhase) { _, phase in // TODO: Use one arg?
+            if phase == .active {
+                Task {
+                    // When the user reopens the app:
+                    await vm.loadData()             // catch up on missed picks
+                    await vm.trySubscribeRealtime() // restart realtime
+                }
+            } else if phase == .background {
+                Task {
+                    await vm.unsubscribeFromRealtime()
+                }
+            }
         }
         .onDisappear {
             Task {
