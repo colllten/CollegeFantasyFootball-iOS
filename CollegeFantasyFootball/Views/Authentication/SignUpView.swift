@@ -68,11 +68,13 @@ struct SignUpView: View {
                     showFields = true
                 }
             }
-            .alert(vm.alertMessage, isPresented: $vm.showAlert) {}
+            
             
             Spacer()
         }
         .padding()
+        .alert(vm.alertMessage, isPresented: $vm.showAlert) {}
+        .withLoading(vm.isLoading)
     }
     
     private var signUpButton: some View {
