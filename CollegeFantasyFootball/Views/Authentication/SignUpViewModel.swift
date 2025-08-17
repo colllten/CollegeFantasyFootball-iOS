@@ -14,7 +14,7 @@ class SignUpViewModel: BaseViewModel {
     @Published var passwordText = ""
     @Published var confirmPasswordText = ""
     
-    private let USERNAME_MIN_LEN: UInt8 = 3
+    private let USERNAME_MIN_LEN: UInt8 = 6
     private let USERNAME_MAX_LEN: UInt8 = 31
     
     /// Sends sign up request to auth provider to create user
@@ -117,7 +117,7 @@ class SignUpViewModel: BaseViewModel {
             LoggingManager
                 .logWarning("Invalid username length: \(usernameText.count)")
             
-            alertMessage = "Invalid username length"
+            alertMessage = "Invalid username length. (\(USERNAME_MIN_LEN) minimum)"
             showAlert = true
             return false
         } else if !usernameContainsOnlyAlphanumerics() {
