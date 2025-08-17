@@ -34,9 +34,10 @@ class HomeViewModel: BaseViewModel {
         
         isLoading = true
         do {
-            let appMetadata = try await fetchLatestAppMetadata()
+            let appMetadatas = try await fetchLatestAppMetadata()
             if let currentAppVersion = UIApplication.appVersion,
-               currentAppVersion < appMetadata.version {
+               let latestAppVersion = appMetadatas.last,
+               currentAppVersion < latestAppVersion.version {
                 throw AppVersionError.OUTDATED_VERSION
             }
             
@@ -85,25 +86,18 @@ class HomeViewModel: BaseViewModel {
         }
     }
     
-    private func fetchLatestAppMetadata() async throws -> AppMetadata {
+    private func fetchLatestAppMetadata() async throws -> [AppMetadata] {
         LoggingManager
             .logInfo("Fetching latest app metadata")
         
         isLoading = true
         defer { isLoading = false }
         
-        let metadatas: [AppMetadata] = try await supabase
+        return try await supabase
             .from("AppMetadata")
             .select()
             .execute()
             .value
-        
-        print(UIApplication.appVersion)
-        print(metadatas)
-        
-        return metadatas.max { m1, m2 in
-            m1.version > m2.version
-        }!
     }
     
     private func fetchUserAffilliatedFantasyLeagueIds() async throws -> [String] {
