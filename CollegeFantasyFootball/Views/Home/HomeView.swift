@@ -69,10 +69,10 @@ struct HomeView: View {
         }
         .alert(vm.updateAlertMessage, isPresented: $vm.showUpdateAlert, actions: {
             Button {
-                let url = URL(string: "itms-apps://itunes.apple.com/")
+                let url = URL(string: "https://apps.apple.com/us/app/college-fantasy-football/id6751005155")
                 UIApplication.shared.open(url!)
             } label: {
-                Text("App Store")
+                Text("Update")
             }
         })
         .withLoading(vm.isLoading)
