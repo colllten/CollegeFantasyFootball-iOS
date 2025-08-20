@@ -13,11 +13,23 @@ struct RecruitsView: View {
     var body: some View {
         List {
             Section {
-                TextField("Search for player", text: $vm.searchStr)
-                    .autocorrectionDisabled()
-                    .textInputAutocapitalization(.words)
-                    .textFieldStyle(.roundedBorder)
-                    .listRowInsets(.init(top: 8, leading: 16, bottom: 8, trailing: 16))
+                HStack {
+                    TextField("Search for player", text: $vm.searchStr)
+                        .autocorrectionDisabled()
+                        .textInputAutocapitalization(.words)
+                        .textFieldStyle(.roundedBorder)
+                    
+                    if !vm.searchStr.isEmpty {
+                        Button {
+                            vm.searchStr = ""
+                        } label: {
+                            Image(systemName: "xmark.circle.fill")
+                                .foregroundColor(.secondary)
+                        }
+                        .padding(.trailing, 8)
+                    }
+                }
+                .listRowInsets(.init(top: 8, leading: 16, bottom: 8, trailing: 16))
             }
             
             Section {

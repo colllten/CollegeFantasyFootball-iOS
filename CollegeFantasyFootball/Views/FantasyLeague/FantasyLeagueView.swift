@@ -32,7 +32,7 @@ struct FantasyLeagueView: View {
             Tab("Roster",
                 systemImage: "person.3",
                 value: .roster) {
-                Text("To be implemented in a future update")
+                RosterView(vm: RosterViewModel(fantasyLeague: fantasyLeague))
             }
         }
     }

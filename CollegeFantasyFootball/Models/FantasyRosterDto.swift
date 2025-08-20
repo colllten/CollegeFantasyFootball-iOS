@@ -61,6 +61,10 @@ struct FantasyRosterDto: Codable {
         return true
     }
     
+    static let emptyFantasyRosterDto = FantasyRosterDto(fantasyLeague: FantasyLeague.emptyLeague,
+                                                        user: User.emptyUser,
+                                                        season: 2025)
+    
     enum CodingKeys: String, CodingKey {
         case fantasyLeague = "fantasy_league"
         case user = "user"
