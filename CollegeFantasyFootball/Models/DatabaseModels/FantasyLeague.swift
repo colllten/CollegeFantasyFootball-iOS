@@ -186,6 +186,13 @@ public struct FantasyLeague: Codable {
         currentSeason: 2025,
         leagueName: "",
         draftDate: Calendar.current.date(byAdding: .day, value: 10, to: Date())!)
+    
+    static let emptyLeague = FantasyLeague(
+        id: UUID(),
+        ownerId: UUID(),
+        currentSeason: 2025,
+        leagueName: "",
+        draftDate: Calendar.current.startOfDay(for: .now))
 }
 
 

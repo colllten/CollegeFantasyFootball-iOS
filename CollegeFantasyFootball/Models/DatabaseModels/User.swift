@@ -25,4 +25,10 @@ struct User: Codable, Identifiable {
         username: "someUsername",
         firstName: "First",
         lastName: "Last")
+    
+    static let emptyUser = User(
+        id: UUID(),
+        username: "",
+        firstName: "",
+        lastName: "")
 }

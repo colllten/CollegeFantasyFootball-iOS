@@ -22,6 +22,15 @@ struct Player: Codable, Hashable {
         return "\(self.firstName) \(self.lastName)"
     }
     
+    static var positionOrder: [String : Int] = [
+        "QB" : 0,
+        "RB" : 1,
+        "TE" : 2,
+        "WR" : 3,
+        "P"  : 4,
+        "PK" : 5
+    ]
+    
     enum CodingKeys: String, CodingKey {
         case id = "id"
         case season = "season"
