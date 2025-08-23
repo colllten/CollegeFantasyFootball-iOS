@@ -168,6 +168,22 @@ struct DraftView: View {
     
     private var draftablePlayers: some View {
         VStack {
+            HStack {
+                TextField("Search for player", text: $vm.playerSearchText)
+                    .autocorrectionDisabled()
+                    .textInputAutocapitalization(.words)
+                    .textFieldStyle(.roundedBorder)
+                    .padding(.horizontal)
+                if !vm.playerSearchText.isEmpty {
+                    Button {
+                        vm.playerSearchText = ""
+                    } label: {
+                        Image(systemName: "xmark.circle.fill")
+                            .foregroundColor(.secondary)
+                    }
+                    .padding(.trailing, 8)
+                }
+            }
             playerFilters
             ScrollView {
                 LazyVStack {
