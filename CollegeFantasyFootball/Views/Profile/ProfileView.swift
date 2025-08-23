@@ -80,6 +80,15 @@ struct ProfileView: View {
             }
             .padding()
         }
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                NavigationLink {
+                    CreditsView()
+                } label: {
+                    Image(systemName: "info.circle")
+                }
+            }
+        }
         .scrollDismissesKeyboard(.interactively)
         .navigationTitle("Profile")
         .navigationBarTitleDisplayMode(.inline)
