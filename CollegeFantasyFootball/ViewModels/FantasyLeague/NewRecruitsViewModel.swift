@@ -57,7 +57,7 @@ final class NewRecruitsViewModel: BaseViewModel {
     }
     @Published var positionSelection = "None"
     
-    let schools: [String] = ["None"] + Array(schoolIdPairs.keys).sorted()
+    let schools: [String] = Array(schoolIdPairs.keys).sorted()
     @Published var schoolSelection = "None"
     
     init(fantasyLeague: FantasyLeague) {
