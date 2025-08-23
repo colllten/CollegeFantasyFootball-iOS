@@ -43,6 +43,8 @@ class DraftViewModel: BaseViewModel {
     }
     @Published var schoolSelection = "None"
     
+    @Published var playerSearchText = ""
+    
     // All players in the listed schools
     var players: [Player] = []
     // Filtered sublist of players based on school and/or position
@@ -62,6 +64,14 @@ class DraftViewModel: BaseViewModel {
         if positionSelection != "None" {
             filtered = filtered.filter({ player in
                 player.position == positionSelection
+            })
+        }
+        
+        if playerSearchText.trimmingCharacters(in: .whitespacesAndNewlines) != "" {
+            filtered = filtered.filter({ player in
+                player.firstName.lowercased().contains(playerSearchText.lowercased().trimmingCharacters(in: .whitespacesAndNewlines))
+                ||
+                player.lastName.lowercased().contains(playerSearchText.lowercased().trimmingCharacters(in: .whitespacesAndNewlines))
             })
         }
         
