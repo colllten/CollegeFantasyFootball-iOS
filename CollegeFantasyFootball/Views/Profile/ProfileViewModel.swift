@@ -9,6 +9,9 @@ import Foundation
 
 class ProfileViewModel: BaseViewModel {
     @Published var user = User.mock
+    @Published var issueText = ""
+    let ISSUE_TEXT_MAX_LEN = 1024
+    let ISSUE_TEXT_MIN_LEN = 10
     
     public func loadData() async {
         LoggingManager
@@ -25,6 +28,30 @@ class ProfileViewModel: BaseViewModel {
             showAlert = true
         }
         isLoading = false
+    }
+    
+    public func submitIssuePressed() async {
+        LoggingManager
+            .logInfo("Submit Issue pressed")
+        
+        isLoading = true
+        defer { isLoading = false }
+        
+        do {
+            cleanInput()
+            try isValidInput()
+            
+            try await submitIssue()
+            
+            issueText = ""
+            alertMessage = "Issue submitted"
+            showAlert = true
+        } catch {
+            LoggingManager
+                .logError("Error submitting issue: \(error)")
+            alertMessage = "Error submitting issue"
+            showAlert = true
+        }
     }
     
     public func signOutButtonPressed() async -> Bool {
@@ -62,5 +89,38 @@ class ProfileViewModel: BaseViewModel {
             .single()
             .execute()
             .value
+    }
+    
+    private func cleanInput() {
+        issueText = issueText.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+    
+    private func isValidInput() throws {
+        if issueText.count < ISSUE_TEXT_MIN_LEN {
+            throw SendIssueError.UNDER_MIN_LEN
+        }
+        if issueText.count > ISSUE_TEXT_MAX_LEN {
+            throw SendIssueError.OVER_MAX_LEN
+        }
+    }
+    
+    private func submitIssue() async throws {
+        LoggingManager
+            .logInfo("Submitting issue")
+        
+        let issue = Issue(
+            id: UUID(),
+            userId: AuthManager.shared.currentUserId!,
+            issueText: issueText)
+        
+        try await supabase
+            .from("Issue")
+            .insert(issue)
+            .execute()
+    }
+    
+    enum SendIssueError: Error {
+        case UNDER_MIN_LEN
+        case OVER_MAX_LEN
     }
 }

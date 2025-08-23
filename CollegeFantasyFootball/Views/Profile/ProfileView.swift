@@ -12,35 +12,75 @@ struct ProfileView: View {
     @ObservedObject var vm: ProfileViewModel
     
     var body: some View {
-        VStack(spacing: 24) {
-            VStack(spacing: 12) {
-                Image(systemName: "person.crop.circle.fill")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 80, height: 80)
-                    .foregroundColor(.blue)
-                
-                if let firstName = vm.user.firstName,
-                   let lastName = vm.user.lastName {
-                    Text("\(firstName) \(lastName)")
-                        .font(.title2)
-                        .fontWeight(.semibold)
+        ScrollView {
+            VStack(spacing: 24) {
+                VStack(spacing: 12) {
+                    Image(systemName: "person.crop.circle.fill")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 80, height: 80)
+                        .foregroundColor(.blue)
+                    
+                    if let firstName = vm.user.firstName,
+                       let lastName = vm.user.lastName {
+                        Text("\(firstName) \(lastName)")
+                            .font(.title2)
+                            .fontWeight(.semibold)
+                    }
+                    
+                    Text("@\(vm.user.username)")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
                 }
+                .frame(maxWidth: .infinity)
                 
-                Text("@\(vm.user.username)")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
+                HStack {
+                    Text("Report an issue")
+                        .bold()
+                    
+                    Spacer()
+                    
+                    Text("\(vm.ISSUE_TEXT_MAX_LEN - vm.issueText.count)")
+                        .foregroundStyle(.secondary)
+                }
+                .padding(.horizontal)
+                
+                TextEditor(text: $vm.issueText)
+                    .frame(minHeight: 120)
+                    .padding(.horizontal)
+                    .clipShape(RoundedRectangle(cornerRadius: 20))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 20)
+                            .stroke(Color.primary, lineWidth: 2)
+                    )
+                    .padding(.horizontal)
+                    .keyboardType(.asciiCapable)
+                
+                Button {
+                    Task {
+                        await vm.submitIssuePressed()
+                    }
+                } label: {
+                    Text("Submit Issue")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.blue)
+                        .foregroundColor(.white)
+                        .cornerRadius(12)
+                }
+                .background(.blue) // Background applied first
+                .clipShape(RoundedRectangle(cornerRadius: 12)) // Then clip it
+                
+                Spacer()
+                signOutButton
+                    .padding(.top, 8)
+                
+                deleteAccountButton
             }
-            .frame(maxWidth: .infinity)
-            
-            Spacer()
-            signOutButton
-                .padding(.top, 8)
-            
-            deleteAccountButton
-                .padding(.top, 8)
+            .padding()
         }
-        .padding()
+        .scrollDismissesKeyboard(.interactively)
         .navigationTitle("Profile")
         .navigationBarTitleDisplayMode(.inline)
         .task {
