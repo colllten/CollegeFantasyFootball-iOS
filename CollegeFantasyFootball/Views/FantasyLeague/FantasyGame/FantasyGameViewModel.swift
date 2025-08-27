@@ -6,11 +6,16 @@
 //
 
 import Foundation
+import PostgREST
 
 class FantasyGameViewModel: BaseViewModel {
     @Published var fantasyGame: FantasyGameDto
+    
     @Published var homeLineup = FantasyLineupDto.mock
+    @Published var homeLineupStats = [GameStatsDto]()
+    
     @Published var awayLineup = FantasyLineupDto.mock
+    @Published var awayLineupStats = [GameStatsDto]()
     
     init(fantasyGame: FantasyGameDto) {
         self.fantasyGame = fantasyGame
@@ -27,6 +32,16 @@ class FantasyGameViewModel: BaseViewModel {
             fantasyGame = try await fetchFantasyGame()
             homeLineup = try await fetchFantasyLineup(userId: fantasyGame.homeUser!.id)
             awayLineup = try await fetchFantasyLineup(userId: fantasyGame.awayUser!.id)
+            
+            homeLineupStats = try await fetchLineupStats(lineup: homeLineup)
+                .filter({ gameStats in
+                    gameStats.game.week == fantasyGame.week
+                })
+            
+            awayLineupStats = try await fetchLineupStats(lineup: awayLineup)
+                .filter({ gameStats in
+                    gameStats.game.week == fantasyGame.week
+                })
         } catch {
             LoggingManager
                 .logError("Error loading data: \(error)")
@@ -62,6 +77,8 @@ class FantasyGameViewModel: BaseViewModel {
         LoggingManager
             .logInfo("Fetching fantasy lineup for user \(userId)")
         
+        // TODO: Create a set fantasy lineup view by week
+        
         return try await supabase
             .from("FantasyLineup")
             .select("""
@@ -85,5 +102,57 @@ class FantasyGameViewModel: BaseViewModel {
             .single()
             .execute()
             .value
+    }
+    
+    private func fetchLineupStats(lineup: FantasyLineupDto) async throws -> [GameStatsDto] {
+        LoggingManager
+            .logInfo("Fetching lineup stats")
+                
+        return try await supabase
+            .from("GameStats")
+            .select("""
+                player:Player!GameStats_player_id_season_fkey(*),
+                game:GameSchedule!GameStats_game_id_fkey(*),
+                season,
+                passing_completions,
+                passing_attempts,
+                passing_yds,
+                passing_td,
+                passing_int,
+                rushing_carries,
+                rushing_yds,
+                rushing_td,
+                receiving_recs,
+                receiving_yds,
+                receiving_td,
+                punt_returns,
+                punt_return_yds,
+                punt_return_td,
+                kick_returns,
+                kick_return_yds,
+                kick_return_td,
+                punting_in_20,
+                kicking_xp_made,
+                kicking_xp_miss,
+                kicking_fg_made,
+                kicking_fg_miss,
+                fumbles_lost
+                """)
+            .in("player_id", values: lineup.playerIds)
+            .eq("season", value: season)
+            .execute()
+            .value
+    }
+}
+
+extension FantasyGameViewModel {
+    func passingYards(for player: Player?) -> String {
+        guard let player = player else { return "—" }
+        
+        // Search both home and away stats
+        if let stats = (homeLineupStats + awayLineupStats).first(where: { $0.player.id == player.id }) {
+            return "\(stats.passingYds)"
+        }
+        return "0"
     }
 }

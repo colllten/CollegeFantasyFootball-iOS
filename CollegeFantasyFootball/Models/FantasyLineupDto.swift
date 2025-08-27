@@ -22,6 +22,36 @@ struct FantasyLineupDto: Codable {
     let pk: Player?
     let p: Player?
     
+    var playerIds: [Int] {
+        var ids = [Int]()
+        
+        if let id = qb?.id {
+            ids.append(id)
+        }
+        if let id = rb?.id {
+            ids.append(id)
+        }
+        if let id = te?.id {
+            ids.append(id)
+        }
+        if let id = wr1?.id {
+            ids.append(id)
+        }
+        if let id = wr2?.id {
+            ids.append(id)
+        }
+        if let id = flex?.id {
+            ids.append(id)
+        }
+        if let id = pk?.id {
+            ids.append(id)
+        }
+        if let id = p?.id {
+            ids.append(id)
+        }
+        return ids
+    }
+    
     enum CodingKeys: String, CodingKey {
         case fantasyLeague = "fantasy_league"
         case user = "user"

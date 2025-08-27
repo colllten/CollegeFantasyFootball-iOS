@@ -2,18 +2,18 @@
 //  GameSchedule.swift
 //  CollegeFantasyFootball
 //
-//  Created by Colten Glover on 8/26/25.
+//  Created by Colten Glover on 7/6/25.
 //
 
 import Foundation
 
-struct GameSchedule: Codable {
+struct GameScheduleDto: Codable {
     let id: Int
     let season: Int
     let week: Int
     let seasonType: String
-    let homeId: Int
-    let awayId: Int
+    let homeTeam: Team
+    let awayTeam: Team
     let homePoints: UInt?
     let awayPoints: UInt?
     let startTimeTbd: Bool
@@ -26,8 +26,8 @@ struct GameSchedule: Codable {
         case season = "season"
         case week = "week"
         case seasonType = "season_type"
-        case homeId = "home_id"
-        case awayId = "away_id"
+        case homeTeam = "home_team"
+        case awayTeam = "away_team"
         case homePoints = "home_points"
         case awayPoints = "away_points"
         case startTimeTbd = "start_time_tbd"
