@@ -21,6 +21,21 @@ struct GameSchedule: Codable {
     let completed: Bool
     let conferenceGame: Bool?
     
+    static var mock = GameSchedule(
+        id: 0,
+        season: 0,
+        week: 0,
+        seasonType: "",
+        homeId: 0,
+        awayId: 0,
+        homePoints: 0,
+        awayPoints: 0,
+        startTimeTbd: false,
+        startDate: Date.now,
+        completed: false,
+        conferenceGame: false
+    )
+    
     enum CodingKeys: String, CodingKey {
         case id = "id"
         case season = "season"

@@ -11,32 +11,76 @@ struct FantasyGameView: View {
                 VStack(spacing: 10) {
                     ForEach(lineupRows, id: \.label) { row in
                         HStack(alignment: .center) {
-                            HStack(spacing: 6) {
-                                Text(pointsString(for: row.awayPlayer))
-                                    .font(.subheadline)
-                                    .monospacedDigit()
-                                    .frame(minWidth: 28, alignment: .trailing)
-                                Spacer()
-                                Text(name(for: row.awayPlayer))
-                                    .font(.subheadline)
+                            if row.awayPlayer == nil {
+                                if vm.awayLineup.user.id == AuthManager.shared.currentUserId! {
+                                    Text("Add to lineup")
+                                        .frame(maxWidth: .infinity, alignment: .center)
+                                        .onTapGesture {
+                                            vm.selectedPosition = row.label
+                                            vm.selectedLineup = vm.awayLineup
+                                            vm.showAddPlayerToLineupSheet = true
+                                        }
+                                        .onChange(of: vm.showAddPlayerToLineupSheet, { old, new in
+                                            if new == false {
+                                                Task {
+                                                    await vm.loadData()
+                                                }
+                                            }
+                                        })
+                                } else {
+                                    Text("Empty")
+                                        .frame(maxWidth: .infinity, alignment: .center)
+                                }
+                            } else {
+                                HStack(spacing: 6) {
+                                    Text(pointsString(for: row.awayPlayer))
+                                        .font(.subheadline)
+                                        .monospacedDigit()
+                                        .frame(minWidth: 28, alignment: .trailing)
+                                    Spacer()
+                                    Text(name(for: row.awayPlayer))
+                                        .font(.subheadline)
+                                }
+                                .frame(maxWidth: .infinity, alignment: .leading)
                             }
-                            .frame(maxWidth: .infinity, alignment: .leading)
                             
                             Text(row.label)
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
                                 .frame(width: 44)
                             
-                            HStack(spacing: 6) {
-                                Text(name(for: row.homePlayer))
-                                    .font(.subheadline)
-                                Spacer()
-                                Text(pointsString(for: row.homePlayer))
-                                    .font(.subheadline)
-                                    .monospacedDigit()
-                                    .frame(minWidth: 28, alignment: .leading)
+                            if row.homePlayer == nil {
+                                if vm.homeLineup.user.id == AuthManager.shared.currentUserId! {
+                                    Text("Add to lineup")
+                                        .frame(maxWidth: .infinity, alignment: .center)
+                                        .onTapGesture {
+                                            vm.selectedPosition = row.label
+                                            vm.selectedLineup = vm.homeLineup
+                                            vm.showAddPlayerToLineupSheet = true
+                                        }
+                                        .onChange(of: vm.showAddPlayerToLineupSheet, { old, new in
+                                            if new == false {
+                                                Task {
+                                                    await vm.loadData()
+                                                }
+                                            }
+                                        })
+                                } else {
+                                    Text("Empty")
+                                        .frame(maxWidth: .infinity, alignment: .center)
+                                }
+                            } else {
+                                HStack(spacing: 6) {
+                                    Text(pointsString(for: row.homePlayer))
+                                        .font(.subheadline)
+                                        .monospacedDigit()
+                                        .frame(minWidth: 28, alignment: .leading)
+                                    Spacer()
+                                    Text(name(for: row.homePlayer))
+                                        .font(.subheadline)
+                                }
+                                .frame(maxWidth: .infinity, alignment: .trailing)
                             }
-                            .frame(maxWidth: .infinity, alignment: .trailing)
                         }
                         .padding(.vertical, 8)
                         .padding(.horizontal, 12)
@@ -48,6 +92,18 @@ struct FantasyGameView: View {
                 .padding(.horizontal)
             }
             .padding(.vertical)
+        }
+        .sheet(isPresented: $vm.showAddPlayerToLineupSheet) {
+            if let pos = vm.selectedPosition,
+               let lineup = vm.selectedLineup {
+                AddPlayerToLineupSheet(
+                    vm: AddPlayerToLineupSheetViewModel(
+                        fantasyLeague: vm.fantasyGame.fantasyLeague,
+                        openPosition: pos,
+                        fantasyLineup: lineup.fantasyLineup
+                    )
+                )
+            }
         }
         .navigationTitle("Matchup")
         .task { await vm.loadData() }
@@ -127,7 +183,7 @@ struct FantasyGameView: View {
         } else {
             return "—"
         }
-
+        
     }
     
     private func scoreString(isHome: Bool) -> String {

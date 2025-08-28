@@ -9,6 +9,9 @@ import Foundation
 import PostgREST
 
 class FantasyGameViewModel: BaseViewModel {
+    @Published var showAddPlayerToLineupSheet = false
+    @Published var selectedPosition: String? = nil
+    @Published var selectedLineup: FantasyLineupDto? = nil
     @Published var fantasyGame: FantasyGameDto
     
     @Published var homeLineup = FantasyLineupDto.mock
@@ -16,6 +19,9 @@ class FantasyGameViewModel: BaseViewModel {
     
     @Published var awayLineup = FantasyLineupDto.mock
     @Published var awayLineupStats = [GameStatsDto]()
+    
+    @Published var earliestGameThisWeek = GameSchedule.mock
+    
     
     init(fantasyGame: FantasyGameDto) {
         self.fantasyGame = fantasyGame
@@ -42,6 +48,8 @@ class FantasyGameViewModel: BaseViewModel {
                 .filter({ gameStats in
                     gameStats.game.week == fantasyGame.week
                 })
+            
+            earliestGameThisWeek = try await fetchEarliestGameInWeek()
         } catch {
             LoggingManager
                 .logError("Error loading data: \(error)")
@@ -107,7 +115,7 @@ class FantasyGameViewModel: BaseViewModel {
     private func fetchLineupStats(lineup: FantasyLineupDto) async throws -> [GameStatsDto] {
         LoggingManager
             .logInfo("Fetching lineup stats")
-                
+        
         return try await supabase
             .from("GameStats")
             .select("""
@@ -142,6 +150,56 @@ class FantasyGameViewModel: BaseViewModel {
             .eq("season", value: season)
             .execute()
             .value
+    }
+    
+    private func fetchEarliestGameInWeek() async throws -> GameSchedule {
+        let games: [GameSchedule] = try await supabase
+            .from("GameSchedule")
+            .select()
+            .eq("season", value: season)
+            .eq("week", value: fantasyGame.week)
+            .execute()
+            .value
+        
+        let earliestGame = games.min { game1, game2 in
+            game1.startDate! < game2.startDate!
+        }
+        
+        return earliestGame!
+    }
+    
+    public func addPlayerToLineupPressed(player: Player, position: String) async {
+        LoggingManager
+            .logInfo("Add Player to Lineup button pressed")
+        
+        isLoading = true
+        defer { isLoading = false }
+        
+        do {
+            showAddPlayerToLineupSheet = true
+        } catch {
+            let errorMsg = "Error adding player to lineup"
+            LoggingManager
+                .logError(errorMsg + "\(error)")
+            
+            alertMessage = errorMsg
+            showAlert = true
+        }
+    }
+    
+    private func addPlayerToLineup(player: Player, position: String) async throws {
+        LoggingManager
+            .logInfo("Adding player to lineup")
+        
+        try await supabase
+            .from("FantasyLineup")
+            .update([
+                "\(position.lowercased())_id" : player.id
+            ])
+            .eq("user_id", value: AuthManager.shared.currentUserId!)
+            .eq("league_id", value: fantasyGame.fantasyLeague.id)
+            .eq("season", value: season)
+            .execute()
     }
 }
 

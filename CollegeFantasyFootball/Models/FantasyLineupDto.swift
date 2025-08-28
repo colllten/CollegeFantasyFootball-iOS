@@ -13,14 +13,30 @@ struct FantasyLineupDto: Codable {
     let week: Int
     let season: Int
     
-    let qb: Player?
-    let rb: Player?
-    let te: Player?
-    let wr1: Player?
-    let wr2: Player?
-    let flex: Player?
-    let pk: Player?
-    let p: Player?
+    var qb: Player?
+    var rb: Player?
+    var te: Player?
+    var wr1: Player?
+    var wr2: Player?
+    var flex: Player?
+    var pk: Player?
+    var p: Player?
+    
+    var fantasyLineup: FantasyLineup {
+        FantasyLineup(
+            leagueId: fantasyLeague.id,
+            userId: user.id,
+            week: week,
+            season: season,
+            qbId: qb?.id,
+            rbId: rb?.id,
+            teId: te?.id,
+            wr1Id: wr1?.id,
+            wr2Id: wr2?.id,
+            flexId: flex?.id,
+            pkId: pk?.id,
+            pId: p?.id)
+    }
     
     var playerIds: [Int] {
         var ids = [Int]()
