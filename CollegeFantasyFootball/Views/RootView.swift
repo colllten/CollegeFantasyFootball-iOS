@@ -10,6 +10,7 @@ import SwiftUI
 struct RootView: View {
     @ObservedObject var auth = AuthManager.shared
     @AppStorage("hasSeenOnboarding") var hasSeenOnboarding = false
+    @AppStorage("hasSeen1.0.6") private var hasSeenUpdate = false
     
     var body: some View {
         Group {
@@ -20,6 +21,9 @@ struct RootView: View {
             } else if auth.currentUser != nil {
                 if hasSeenOnboarding {
                     HomeView(vm: HomeViewModel())
+                        .sheet(isPresented: .constant(!hasSeenUpdate)) {
+                            AppUpdatesView()
+                        }
                         .animation(.default, value: auth.currentUser)
                 } else {
                     OnboardingView()
