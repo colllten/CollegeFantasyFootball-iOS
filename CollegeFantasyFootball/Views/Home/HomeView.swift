@@ -26,6 +26,8 @@ struct HomeView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 16))
                 .shadow(radius: 5)
                 .padding(.horizontal)
+                .disabled(isPastDeadline) // 👈 disable past Aug 29
+                .opacity(isPastDeadline ? 0.5 : 1)
         }
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
@@ -160,6 +162,19 @@ struct HomeView: View {
                 .cornerRadius(12)
                 .accessibilityAddTraits(.isButton)
         }
+    }
+    
+    private var isPastDeadline: Bool {
+        let calendar = Calendar.current
+        let today = Date()
+        
+        var cutoffComponents = DateComponents()
+        cutoffComponents.year = 2025
+        cutoffComponents.month = 8
+        cutoffComponents.day = 29
+        
+        let cutoff = calendar.date(from: cutoffComponents)!
+        return today > cutoff
     }
 }
 
