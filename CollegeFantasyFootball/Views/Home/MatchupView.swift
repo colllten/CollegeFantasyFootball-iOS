@@ -9,7 +9,7 @@ import SwiftUI
 
 struct MatchupView: View {
     @Environment(\.colorScheme) var colorScheme
-    let game: GameSchedule
+    let game: GameScheduleDto
     let vm: HomeViewModel
     
     private static let dateFormatter: DateFormatter = {

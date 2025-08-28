@@ -31,6 +31,18 @@ struct Player: Codable, Hashable {
         "PK" : 5
     ]
     
+    static var mock = Player(
+        id: 1,
+        season: 2025,
+        firstName: "C",
+        lastName: "G",
+        height: 10,
+        weight: 10,
+        jersey: 10,
+        position: "WR",
+        teamId: 154
+    )
+    
     enum CodingKeys: String, CodingKey {
         case id = "id"
         case season = "season"

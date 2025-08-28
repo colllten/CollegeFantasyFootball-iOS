@@ -20,6 +20,20 @@ struct Team: Codable {
     let logos: [String]?
     let alternateNames: [String]?
     
+    static var mock = Team(
+        id: 0,
+        school: "",
+        mascot: "",
+        abbreviation: "",
+        conference: "",
+        color: "",
+        alternateColor: "",
+        division: "",
+        classification: "",
+        logos: [],
+        alternateNames: []
+    )
+    
     enum CodingKeys: String, CodingKey {
         case id = "id"
         case school = "school"

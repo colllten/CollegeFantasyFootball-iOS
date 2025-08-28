@@ -13,8 +13,8 @@ import SwiftUI
 class HomeViewModel: BaseViewModel {
     @Published var fantasyLeagues: [FantasyLeague] = []
     
-    @Published var games: [GameSchedule] = []
-    var selectedWeekGames: [GameSchedule] {
+    @Published var games: [GameScheduleDto] = []
+    var selectedWeekGames: [GameScheduleDto] {
         games.filter { game in
             game.week == weekSelection
         }
@@ -135,10 +135,10 @@ class HomeViewModel: BaseViewModel {
             .value
     }
     
-    private func fetchSchedules() async throws -> [GameSchedule] {
+    private func fetchSchedules() async throws -> [GameScheduleDto] {
         LoggingManager
             .logInfo("Fetching conference schedules")
-        let response: PostgrestResponse<[GameSchedule]> = try await supabase
+        let response: PostgrestResponse<[GameScheduleDto]> = try await supabase
             .from("GameSchedule")
             .select("id, season, week, season_type, home_team:Team!GameSchedule_home_id_fkey(*), away_team:Team!GameSchedule_away_id_fkey(*), home_points, away_points, start_time_tbd, start_date, completed, conference_game")
             .eq("season", value: season)

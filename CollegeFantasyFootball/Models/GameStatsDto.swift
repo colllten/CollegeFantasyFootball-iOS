@@ -8,11 +8,9 @@
 import Foundation
 
 struct GameStatsDto: Codable {
-    // TODO: Remove
     var player: Player
-    
-    var playerId: Int
-    var gameId: Int
+    var game: GameSchedule
+    var season: Int
     
     var passingCompletions: Int
     var passingAttempts: Int
@@ -20,6 +18,7 @@ struct GameStatsDto: Codable {
     var passingTd: Int
     var passingInt: Int
     
+    var rushingCarries: Int
     var rushingYds: Int
     var rushingTd: Int
     
@@ -39,17 +38,34 @@ struct GameStatsDto: Codable {
     var kickingFgMade: Int
     var kickingFgMiss: Int
     
+    var puntReturns: Int
+    var kickReturns: Int
+    
     var fumblesLost: Int
     
     static var mock = GameStatsDto(
-        player: GameStatsDto.Player(firstName: "Will", lastName: "Rogers"),
-        playerId: 102597,
-        gameId: 401628460,
+        player: Player.mock,
+        game: GameSchedule(
+            id: 0,
+            season: 0,
+            week: 0,
+            seasonType: "",
+            homeId: 0,
+            awayId: 0,
+            homePoints: 0,
+            awayPoints: 0,
+            startTimeTbd: false,
+            startDate: nil,
+            completed: false,
+            conferenceGame: nil
+        ),
+        season: 2025,
         passingCompletions: 20,
         passingAttempts: 26,
         passingYds: 250,
         passingTd: 1,
         passingInt: 0,
+        rushingCarries: 10,
         rushingYds: -16,
         rushingTd: 0,
         receivingRecs: 0,
@@ -59,11 +75,13 @@ struct GameStatsDto: Codable {
         puntReturnTd: 0,
         kickReturnYds: 0,
         kickReturnTd: 0,
-        puntingIn20: 0,
-        kickingXpMade: 0,
+        puntingIn20: 5,
+        kickingXpMade: 5,
         kickingXpMiss: 0,
         kickingFgMade: 0,
         kickingFgMiss: 0,
+        puntReturns: 0,
+        kickReturns: 0,
         fumblesLost: 0
     )
     
@@ -113,10 +131,9 @@ struct GameStatsDto: Codable {
     }
     
     enum CodingKeys: String, CodingKey {
-        case player = "Player"
-        
-        case playerId = "player_id"
-        case gameId = "game_id"
+        case player = "player"
+        case game = "game"
+        case season = "season"
         
         case passingCompletions = "passing_completions"
         case passingAttempts = "passing_attempts"
@@ -124,6 +141,7 @@ struct GameStatsDto: Codable {
         case passingTd = "passing_td"
         case passingInt = "passing_int"
         
+        case rushingCarries = "rushing_carries"
         case rushingYds = "rushing_yds"
         case rushingTd = "rushing_td"
         
@@ -137,6 +155,9 @@ struct GameStatsDto: Codable {
         case kickReturnYds = "kick_return_yds"
         case kickReturnTd = "kick_return_td"
         
+        case puntReturns = "punt_returns"
+        case kickReturns = "kick_returns"
+        
         case puntingIn20 = "punting_in_20"
         
         case kickingXpMade = "kicking_xp_made"
@@ -145,20 +166,5 @@ struct GameStatsDto: Codable {
         case kickingFgMiss = "kicking_fg_miss"
         
         case fumblesLost = "fumbles_lost"
-    }
-    
-    class Player: Codable {
-        var firstName: String
-        var lastName: String
-        
-        init(firstName: String, lastName: String) {
-            self.firstName = firstName
-            self.lastName = lastName
-        }
-        
-        enum CodingKeys: String, CodingKey {
-            case firstName = "first_name"
-            case lastName = "last_name"
-        }
     }
 }

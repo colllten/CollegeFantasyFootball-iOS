@@ -12,38 +12,38 @@ struct RosterView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-                    HStack {
-                        let filled = vm.roster.rosterPlayers.count
-                        let max = 12 // TODO: Don't hardcode
-                        
-                        if filled < max {
-                            Text("\(max - filled) roster \(max - filled == 1 ? "spot" : "spots") available")
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                        } else {
-                            Text("\(filled)/\(max) roster spots filled")
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                        }
-                        
-                        Spacer()
-                    }
-                    .padding(.horizontal)
-                    
-                    ScrollView {
-                        ForEach(vm.roster.rosterPlayers.sorted(by: vm.sortPlayersByPosition(p1:p2:)), id: \.id) { player in
-                            RosterPlayerRowView(vm: vm,
-                                                player: player,
-                                                url: vm.getPlayerImageUrl(playerId: player.id))
-                            .listRowInsets(.init(top: 4, leading: 16, bottom: 4, trailing: 16))
-                            .listRowSeparator(.hidden)
-                            .padding(.horizontal)
-                        }
-                    }
+            HStack {
+                let filled = vm.roster.rosterPlayers.count
+                let max = 12 // TODO: Don't hardcode
+                
+                if filled < max {
+                    Text("\(max - filled) roster \(max - filled == 1 ? "spot" : "spots") available")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                } else {
+                    Text("\(filled)/\(max) roster spots filled")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
                 }
-                .task { await vm.loadData() }
-                .withLoading(vm.isLoading)
-                .alert(vm.alertMessage, isPresented: $vm.showAlert) { }
+                
+                Spacer()
+            }
+            .padding(.horizontal)
+            
+            ScrollView {
+                ForEach(vm.roster.rosterPlayers.sorted(by: vm.sortPlayersByPosition(p1:p2:)), id: \.id) { player in
+                    RosterPlayerRowView(vm: vm,
+                                        player: player,
+                                        url: vm.getPlayerImageUrl(playerId: player.id))
+                    .listRowInsets(.init(top: 4, leading: 16, bottom: 4, trailing: 16))
+                    .listRowSeparator(.hidden)
+                    .padding(.horizontal)
+                }
+            }
+        }
+        .task { await vm.loadData() }
+        .withLoading(vm.isLoading)
+        .alert(vm.alertMessage, isPresented: $vm.showAlert) { }
     }
     
     struct RosterPlayerRowView: View {
