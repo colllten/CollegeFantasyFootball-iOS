@@ -98,7 +98,6 @@ class AddPlayerToLineupSheetViewModel: BaseViewModel {
             fantasyLineup = try await fetchLineup()
             
             let fantasyRosterPlayers = try await fetchFantasyRoster().rosterPlayers
-            print(openPosition)
             
             switch openPosition {
             case "QB":
