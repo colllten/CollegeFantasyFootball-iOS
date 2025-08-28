@@ -78,7 +78,7 @@ class RosterViewModel: BaseViewModel {
         
         do {
             try await dropPlayer(playerId: playerId)
-            // TODO: Remove from any future rosters
+            try await dropFromFutureLineups(playerId: playerId)
             await loadData()
         } catch {
             LoggingManager
@@ -94,6 +94,77 @@ class RosterViewModel: BaseViewModel {
         
         try await removePlayerFromRoster(playerId: playerId)
         try await updateDbRoster()
+    }
+    
+    private func dropFromFutureLineups(playerId: Int) async throws {
+        LoggingManager
+            .logInfo("Dropping from future lineups")
+        
+        let metadata: Metadata = try await supabase
+            .from("Metadata")
+            .select()
+            .eq("conference", value: "Big Ten")
+            .single()
+            .execute()
+            .value
+        
+        var week = metadata.week + 1
+        while week < 11 {
+            var lineup: FantasyLineup = try await supabase
+                .from("FantasyLineup")
+                .select()
+                .eq("user_id", value: AuthManager.shared.currentUserId!)
+                .eq("league_id", value: fantasyLeague.id)
+                .eq("week", value: week)
+                .eq("season", value: season)
+                .single()
+                .execute()
+                .value
+            
+            if lineup.qbId == playerId {
+                lineup.qbId = nil
+            }
+            if lineup.rbId == playerId {
+                lineup.rbId = nil
+            }
+            if lineup.teId == playerId {
+                lineup.teId = nil
+            }
+            if lineup.wr1Id == playerId {
+                lineup.wr1Id = nil
+            }
+            if lineup.wr2Id == playerId {
+                lineup.wr2Id = nil
+            }
+            if lineup.flexId == playerId {
+                lineup.flexId = nil
+            }
+            if lineup.pkId == playerId {
+                lineup.pkId = nil
+            }
+            if lineup.pId == playerId {
+                lineup.pId = nil
+            }
+            try await supabase
+                .from("FantasyLineup")
+                .update([
+                    "qb_id": lineup.qbId,
+                    "rb_id": lineup.rbId,
+                    "te_id": lineup.teId,
+                    "wr1_id": lineup.wr1Id,
+                    "wr2_id": lineup.wr2Id,
+                    "flex_id": lineup.flexId,
+                    "pk_id": lineup.pkId,
+                    "p_id": lineup.pId
+                ])
+                .eq("user_id", value: AuthManager.shared.currentUserId!)
+                .eq("league_id", value: fantasyLeague.id)
+                .eq("week", value: week)
+                .eq("season", value: season)
+                .execute()
+            
+            week += 1
+        }
     }
     
     private func removePlayerFromRoster(playerId: Int) async throws {
