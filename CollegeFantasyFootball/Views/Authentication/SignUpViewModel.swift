@@ -106,14 +106,7 @@ class SignUpViewModel: BaseViewModel {
         LoggingManager
             .logInfo("Validating form inputs")
         
-        if !emailMatchesRegEx() {
-            LoggingManager
-                .logWarning("Invalid email: \(emailText)")
-            
-            alertMessage = "Invalid email"
-            showAlert = true
-            return false
-        } else if !usernameIsWithinRange() {
+        if !usernameIsWithinRange() {
             LoggingManager
                 .logWarning("Invalid username length: \(usernameText.count)")
             
@@ -144,17 +137,6 @@ class SignUpViewModel: BaseViewModel {
         }
         
         return true
-    }
-    
-    /// Validates an email is valid to be sent to DB
-    private func emailMatchesRegEx() -> Bool {
-        LoggingManager
-            .logInfo("Comparing email to regex format")
-        
-        let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
-        let emailPred = NSPredicate(format:"SELF MATCHES %@", emailRegEx)
-        
-        return emailPred.evaluate(with: emailText)
     }
     
     /// Checks if given username is within length range
