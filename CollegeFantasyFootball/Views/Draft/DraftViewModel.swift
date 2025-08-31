@@ -345,7 +345,7 @@ class DraftViewModel: BaseViewModel {
             leagueId: fantasyLeague.id,
             userId: userId,
             playerId: playerId,
-            season: season)
+            season: UInt16(season))
         
         try await supabase
             .from("DraftBoard")

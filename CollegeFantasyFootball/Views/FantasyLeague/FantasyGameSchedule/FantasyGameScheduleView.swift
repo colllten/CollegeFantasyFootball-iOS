@@ -28,7 +28,7 @@ struct FantasyGameScheduleView: View {
     }
     
     private var gamesByWeek: [Int: [FantasyGameDto]] {
-        Dictionary(grouping: vm.allFantasyGames, by: { $0.week })
+        Dictionary(grouping: vm.allFantasyGames, by: { Int($0.week) })
     }
     
     private var sortedWeeks: [Int] {

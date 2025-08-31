@@ -7,16 +7,30 @@
 
 import Foundation
 
-struct FantasyGameDto: Codable {
+struct FantasyGameDto: Codable, SqlSelectable {
     let id: UUID
     let fantasyLeague: FantasyLeague
     let homeUser: User?
     let awayUser: User?
-    let week: Int
-    let homeScore: Float?
-    let awayScore: Float?
+    let week: UInt8
+    let homeScore: Float16?
+    let awayScore: Float16?
     let winningUser: User?
     let isPlayoff: Bool
+    
+    static func selectAll(keys: String...) -> String {
+        return """
+            id,
+            fantasy_league:\(keys[0]),
+            home_user:\(keys[1]),
+            away_user:\(keys[2]),
+            week,
+            home_score,
+            away_score,
+            winning_user:\(keys[3]),
+            is_playoff
+            """
+    }
     
     enum CodingKeys: String, CodingKey {
         case id = "id"

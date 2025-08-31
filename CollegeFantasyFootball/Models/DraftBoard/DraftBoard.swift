@@ -7,11 +7,20 @@
 
 import Foundation
 
-struct DraftBoard: Codable {
+struct DraftBoard: Codable, SqlSelectable {
     let leagueId: UUID
     let userId: UUID
     let playerId: Int
-    let season: Int
+    let season: UInt16
+    
+    static func selectAll(keys: String...) -> String {
+        return """
+            league_id,
+            user_id,
+            player_id,
+            season
+            """
+    }
     
     private enum CodingKeys: String, CodingKey {
         case leagueId = "league_id"

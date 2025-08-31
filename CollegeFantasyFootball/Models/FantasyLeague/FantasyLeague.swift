@@ -8,23 +8,15 @@
 import Foundation
 
 public struct FantasyLeague: Codable {
-    /// Unique ID
     let id: UUID
-    /// User ID of the fantasy league owner
     var ownerId = ""
-    /// Current fantasy league season
+    // TODO: Read from config
     var currentSeason = 2025
-    /// Name of the fantasy league
     var leagueName = ""
-    /// Date of draft
     var draftDate: Date = .now
-    /// Flag if draft is currently in progress
     var draftInProgress = false
-    /// Flag if draft has finished
     var draftComplete = false
     
-    // MARK: Fantasy league settings
-    // TODO: Change all below to LET?
     var ppr: Bool = false {
         didSet {
             if !ppr {

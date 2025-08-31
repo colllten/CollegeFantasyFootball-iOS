@@ -105,7 +105,7 @@ class FantasyGameViewModel: BaseViewModel {
                 """)
             .eq("league_id", value: fantasyGame.fantasyLeague.id)
             .eq("user_id", value: userId)
-            .eq("week", value: fantasyGame.week)
+            .eq("week", value: Int(fantasyGame.week))
             .eq("season", value: season)
             .single()
             .execute()
@@ -157,7 +157,7 @@ class FantasyGameViewModel: BaseViewModel {
             .from("GameSchedule")
             .select()
             .eq("season", value: season)
-            .eq("week", value: fantasyGame.week)
+            .eq("week", value: Int(fantasyGame.week))
             .execute()
             .value
         

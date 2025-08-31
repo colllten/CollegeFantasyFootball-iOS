@@ -72,8 +72,8 @@ struct GameRow: View {
                 if let homeScore = game.homeScore,
                    let awayScore = game.awayScore {
                     VStack(alignment: .trailing, spacing: 4) {
-                        Text(scoreString(homeScore))
-                        Text(scoreString(awayScore))
+                        Text(scoreString(Float(homeScore)))
+                        Text(scoreString(Float(awayScore)))
                     }
                     .font(.headline)
                 } else {

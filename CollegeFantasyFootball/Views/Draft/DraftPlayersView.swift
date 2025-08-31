@@ -67,10 +67,6 @@ final class DraftPlayersViewModel: BaseViewModel {
     }
 }
 
-struct DraftPickDto: Equatable {
-    
-}
-
 private struct DraftPicksResponse: Decodable {
     let id = UUID()
     let userId: String
