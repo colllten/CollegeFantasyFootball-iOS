@@ -21,6 +21,23 @@ struct GameScheduleDto: Codable {
     let completed: Bool
     let conferenceGame: Bool?
     
+    static func selectAll() -> String {
+        return """
+            id,
+            season,
+            week,
+            season_type,
+            home_team:Team!GameSchedule_home_id_fkey(*),
+            away_team:Team!GameSchedule_away_id_fkey(*),
+            home_points,
+            away_points,
+            start_time_tbd,
+            start_date,
+            completed,
+            conference_game
+            """
+    }
+    
     enum CodingKeys: String, CodingKey {
         case id = "id"
         case season = "season"
