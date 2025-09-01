@@ -23,6 +23,10 @@ struct SignInView: View {
             
             LoginForm
                 .padding(.horizontal, 30)
+                .padding(.bottom, 15)
+            NavigationLink("Forgot password?") {
+                OtpSignInView()
+            }
             
             Spacer()
             
