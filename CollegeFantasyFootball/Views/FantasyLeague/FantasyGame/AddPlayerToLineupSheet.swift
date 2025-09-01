@@ -15,10 +15,12 @@ struct AddPlayerToLineupSheet: View {
         ScrollView {
             VStack {
                 if vm.selectablePlayers.isEmpty {
-                    Text("You must sign at player at this position")
+                    Text("You must sign a player at this position")
                 } else {
                     ForEach(vm.selectablePlayers, id: \.id) { player in
-                        playerRow(player: player)
+                        AddPlayerRowView(vm: vm,
+                                         player: player,
+                                         url: vm.getPlayerImageUrl(playerId: player.id))
                             .padding()
                     }
                 }
@@ -69,212 +71,65 @@ struct AddPlayerToLineupSheet: View {
     }
 }
 
-class AddPlayerToLineupSheetViewModel: BaseViewModel {
-    @Published var dismiss = false
-    let fantasyLeague: FantasyLeague
-    let openPosition: String
-    var fantasyLineup: FantasyLineup
+struct AddPlayerRowView: View {
+    let vm: AddPlayerToLineupSheetViewModel
+    let player: Player
+    let url: URL?
     
-    @Published var selectablePlayers = [Player]()
-    
-    init(
-        fantasyLeague: FantasyLeague,
-        openPosition: String,
-        fantasyLineup: FantasyLineup
-    ) {
-        self.fantasyLeague = fantasyLeague
-        self.openPosition = openPosition
-        self.fantasyLineup = fantasyLineup
-    }
-    
-    public func loadData() async {
-        LoggingManager
-            .logInfo("Loading data for AddPlayerToLineupSheet")
-        
-        isLoading = true
-        defer { isLoading = false }
-                
-        do {
-            fantasyLineup = try await fetchLineup()
-            
-            let fantasyRosterPlayers = try await fetchFantasyRoster().rosterPlayers
-            
-            switch openPosition {
-            case "QB":
-                selectablePlayers = fantasyRosterPlayers.filter { player in
-                    !fantasyLineup.playerIds.contains(player.id)
-                    &&
-                    player.position == "QB"
-                }
-            case "RB":
-                selectablePlayers = fantasyRosterPlayers.filter { player in
-                    !fantasyLineup.playerIds.contains(player.id)
-                    &&
-                    player.position == "RB"
-                }
-            case "TE":
-                selectablePlayers = fantasyRosterPlayers.filter { player in
-                    !fantasyLineup.playerIds.contains(player.id)
-                    &&
-                    player.position == "TE"
-                }
-            case "WR1":
-                selectablePlayers = fantasyRosterPlayers.filter { player in
-                    !fantasyLineup.playerIds.contains(player.id)
-                    &&
-                    player.position == "WR"
-                }
-            case "WR2":
-                selectablePlayers = fantasyRosterPlayers.filter { player in
-                    !fantasyLineup.playerIds.contains(player.id)
-                    &&
-                    player.position == "WR"
-                }
-            case "FLEX":
-                selectablePlayers = fantasyRosterPlayers.filter { player in
-                    !fantasyLineup.playerIds.contains(player.id)
-                    &&
-                    (
-                        player.position == "RB"
-                        ||
-                        player.position == "TE"
-                        ||
-                        player.position == "WR"
-                    )
-                }
-            case "P":
-                selectablePlayers = fantasyRosterPlayers.filter { player in
-                    !fantasyLineup.playerIds.contains(player.id)
-                    &&
-                    player.position == "P"
-                }
-            case "PK":
-                selectablePlayers = fantasyRosterPlayers.filter { player in
-                    !fantasyLineup.playerIds.contains(player.id)
-                    &&
-                    player.position == "PK"
-                }
-            default:
-                LoggingManager
-                    .logWarning("Hit default")
-                selectablePlayers = fantasyRosterPlayers.filter { player in
-                    !fantasyLineup.playerIds.contains(player.id)
-                    &&
-                    player.position == "QB"
+    var body: some View {
+        HStack(spacing: 12) {
+            AsyncImage(url: url) { phase in
+                switch phase {
+                case .empty:
+                    avatarPlaceholder
+                case .success(let image):
+                    image
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 44, height: 44)
+                        .clipShape(Circle())
+                case .failure:
+                    avatarPlaceholder
+                @unknown default:
+                    avatarPlaceholder
                 }
             }
-        } catch {
-            let errorMsg = "Error loading data"
-            LoggingManager
-                .logError(errorMsg + ": \(error)")
             
-            alertMessage = errorMsg
-            showAlert = true
-        }
-    }
-    
-    private func fetchLineup() async throws -> FantasyLineup {
-        LoggingManager
-            .logInfo("Fetching fantasy lineup")
-        
-        return try await supabase
-            .from("FantasyLineup")
-            .select()
-            .eq("season", value: season)
-            .eq("user_id", value: AuthManager.shared.currentUserId!)
-            .eq("league_id", value: fantasyLeague.id)
-            .eq("week", value: fantasyLineup.week)
-            .single()
-            .execute()
-            .value
-    }
-    
-    private func fetchFantasyRoster() async throws -> FantasyRosterDto {
-        LoggingManager
-            .logInfo("Fetching fantasy roster")
-        
-        return try await supabase
-            .from("FantasyRoster")
-            .select("""
-                fantasy_league:FantasyLeague!FantasyRoster_league_id_fkey(*),
-                user:User!FantasyRoster_user_id_fkey(*),
-                season,
-                player_1:FantasyRoster_player_1_id_season_fkey(*),
-                player_2:FantasyRoster_player_2_id_season_fkey(*),
-                player_3:FantasyRoster_player_3_id_season_fkey(*),
-                player_4:FantasyRoster_player_4_id_season_fkey(*),
-                player_5:FantasyRoster_player_5_id_season_fkey(*),
-                player_6:FantasyRoster_player_6_id_season_fkey(*),
-                player_7:FantasyRoster_player_7_id_season_fkey(*),
-                player_8:FantasyRoster_player_8_id_season_fkey(*),
-                player_9:FantasyRoster_player_9_id_season_fkey(*),
-                player_10:FantasyRoster_player_10_id_season_fkey(*),
-                player_11:FantasyRoster_player_11_id_season_fkey(*),
-                player_12:FantasyRoster_player_12_id_season_fkey(*)
-                """)
-            .eq("user_id", value: AuthManager.shared.currentUserId!)
-            .eq("league_id", value: fantasyLeague.id)
-            .eq("season", value: season)
-            .single()
-            .execute()
-            .value
-    }
-    
-    public func addPlayerToLineupPressed(playerId: Int) async {
-        LoggingManager
-            .logInfo("Add Player to Lineup pressed")
-        
-        isLoading = true
-        defer { isLoading = false }
-        
-        do {
-            try await updateFantasyLineup(playerId: playerId)
-            dismiss = true
-        } catch {
-            let errorMsg = "Error adding player to lineup"
-            LoggingManager
-                .logError(errorMsg + "\(error)")
+            VStack(alignment: .leading, spacing: 4) {
+                Text(player.fullName)
+                    .font(.headline)
+                
+                Text("\(player.position) • \(idSchoolPairs[player.teamId]!)")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
             
-            alertMessage = errorMsg
-            showAlert = true
+            Spacer()
+            
+            Button("Add") {
+                Task {
+                    await vm.addPlayerToLineupPressed(playerId: player.id)
+                }
+            }
+            .buttonStyle(.borderedProminent)
+            .controlSize(.small)
         }
     }
     
-    private func updateFantasyLineup(playerId: Int) async throws {
-        LoggingManager
-            .logInfo("Updating fantasy lineup")
-        
-        let column = switch openPosition {
-        case "QB":
-            "qb_id"
-        case "RB":
-            "rb_id"
-        case "WR1":
-            "wr1_id"
-        case "WR2":
-            "wr2_id"
-        case "TE":
-            "te_id"
-        case "FLEX":
-            "flex_id"
-        case "P":
-            "p_id"
-        case "PK":
-            "pk_id"
-        default:
-            // TODO: throw error
-            "qb_id"
+    private func initials(from player: Player) -> String {
+        let firstInitial = player.firstName.first.map(String.init) ?? ""
+        let lastInitial = player.lastName.first.map(String.init) ?? ""
+        return firstInitial + lastInitial
+    }
+    
+    private var avatarPlaceholder: some View {
+        ZStack {
+            Circle()
+                .fill(Color.gray.opacity(0.15))
+                .frame(width: 44, height: 44)
+            Text(initials(from: player))
+                .font(.subheadline.weight(.semibold))
+                .foregroundColor(.gray)
         }
-        
-        try await supabase
-            .from("FantasyLineup")
-            .update([
-                column : playerId
-            ])
-            .eq("season", value: season)
-            .eq("user_id", value: AuthManager.shared.currentUserId!)
-            .eq("league_id", value: fantasyLeague.id)
-            .eq("week", value: fantasyLineup.week)
-            .execute()
     }
 }
