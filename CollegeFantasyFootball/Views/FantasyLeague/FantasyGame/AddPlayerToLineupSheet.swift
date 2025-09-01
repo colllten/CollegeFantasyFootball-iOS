@@ -102,6 +102,10 @@ struct AddPlayerRowView: View {
                 Text("\(player.position) • \(idSchoolPairs[player.teamId]!)")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
+                
+                Text("\(vm.getOpponent(for: player) ?? "")")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
             }
             
             Spacer()

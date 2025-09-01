@@ -9,6 +9,7 @@ import Foundation
 
 class AddPlayerToLineupSheetViewModel: BaseViewModel {
     @Published var dismiss = false
+    @Published var currentWeekGames = [GameScheduleDto]()
     let fantasyLeague: FantasyLeague
     let openPosition: String
     var fantasyLineup: FantasyLineup
@@ -34,6 +35,8 @@ class AddPlayerToLineupSheetViewModel: BaseViewModel {
                 
         do {
             fantasyLineup = try await fetchLineup()
+            
+            currentWeekGames = try await fetchWeekGames(week: fantasyLineup.week)
             
             let fantasyRosterPlayers = try await fetchFantasyRoster().rosterPlayers
             
@@ -122,6 +125,35 @@ class AddPlayerToLineupSheetViewModel: BaseViewModel {
                 .logError("Error getting URL for player \(playerId)")
         }
         return nil
+    }
+    
+    public func getOpponent(for player: Player) -> String? {
+        let game = currentWeekGames.first { game in
+            game.homeTeam.id == player.teamId
+            ||
+            game.awayTeam.id == player.teamId
+        }
+        
+        if game != nil {
+            return game!.homeTeam.id == player.teamId ?
+            "@ \(game!.awayTeam.school)" :
+            "vs. \(game!.homeTeam.school)"
+        }
+        
+        return nil
+    }
+    
+    private func fetchWeekGames(week: Int) async throws -> [GameScheduleDto] {
+        LoggingManager
+            .logInfo("Fetching week \(week)'s games")
+        
+        return try await supabase
+            .from("GameSchedule")
+            .select(GameScheduleDto.selectAll())
+            .eq("season", value: season)
+            .eq("week", value: week)
+            .execute()
+            .value
     }
     
     private func fetchLineup() async throws -> FantasyLineup {
