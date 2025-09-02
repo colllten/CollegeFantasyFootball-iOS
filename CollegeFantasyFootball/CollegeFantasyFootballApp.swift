@@ -13,8 +13,6 @@ struct CollegeFantasyFootballApp: App {
         UserDefaults.standard.register(defaults: [
             "season": 2025,
         ])
-        
-        
     }
     
     var body: some Scene {

@@ -34,6 +34,7 @@ class HomeViewModel: BaseViewModel {
         
         isLoading = true
         do {
+            weekSelection = try await fetchCurrentWeek()
             let appMetadatas = try await fetchLatestAppMetadata()
             if let currentAppVersion = UIApplication.appVersion,
                let latestAppVersion = appMetadatas.last,
@@ -171,6 +172,21 @@ class HomeViewModel: BaseViewModel {
         }
         
         return unansweredInvites > 0
+    }
+    
+    private func fetchCurrentWeek() async throws -> Int {
+        LoggingManager
+            .logInfo("Fetching current week")
+        
+        let metadata: PostgrestResponse<Metadata> = try await supabase
+            .from("Metadata")
+            .select()
+            .single() // TODO: Dangerous once additional conferences are added
+            .execute()
+        
+        return metadata
+            .value
+            .week
     }
 }
 
