@@ -10,4 +10,9 @@ import Foundation
 struct Metadata: Codable {
     let conference: String
     let week: Int
+    
+    enum CodingKeys: String, CodingKey {
+        case conference = "conference"
+        case week = "week"
+    }
 }
