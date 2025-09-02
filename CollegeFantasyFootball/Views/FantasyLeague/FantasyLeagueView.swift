@@ -35,6 +35,16 @@ struct FantasyLeagueView: View {
                 RosterView(vm: RosterViewModel(fantasyLeague: fantasyLeague))
             }
         }
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                NavigationLink {
+                    InSeasonFantasyLeagueSettingsView(vm: InSeasonLeagueSettingsViewModel(fantasyLeague: fantasyLeague))
+                } label: {
+                    Image(systemName: "gear")
+                        .accessibilityLabel("Settings")
+                }
+            }
+        }
     }
     
     enum FantasyLeagueViewFocus: String {
