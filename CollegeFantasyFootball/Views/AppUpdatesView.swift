@@ -10,30 +10,24 @@ import SwiftUI
 struct AppUpdatesView: View {
     @Environment(\.dismiss) var dismiss
     
-    // Update this key each release (e.g., "hasSeen1.0.7")
-    private let updateKey = "hasSeen1.0.6"
+    private let updateKey = "hasSeen1.0.7"
     
-    @State private var hasSeenUpdate: Bool = UserDefaults.standard.bool(forKey: "hasSeen1.0.6")
+    @State private var hasSeenUpdate: Bool = UserDefaults.standard.bool(forKey: "hasSeen1.0.7")
     
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
-                    Text("What’s New in 1.0.6")
+                    Text("What’s New in 1.0.7")
                         .font(.title)
                         .fontWeight(.bold)
                     
                     VStack(alignment: .leading, spacing: 12) {
-                        UpdateRow(text: "Disabled league creation after August 29.")
-                        UpdateRow(text: "Added ability to edit lineup before the collegiate football week has started.")
-                        UpdateRow(text: "Bug fixes and performance improvements.")
-                        UpdateRow(text: "NOTE: Players cannot be removed from a lineup once they have been picked for that position. This will be fixed in a future update.")
+                        UpdateRow(text: "Added OTP sign in")
+                        UpdateRow(text: "Added in-season fantasy league settings")
+                        UpdateRow(text: "Edit Lineup UI improvements")
+                        UpdateRow(text: "Added a player's opponent when selecting them to a lineup")
                     }
-                    
-                    Text("Thank you for your patience with updates to the app. Issues submitted within your profile tab are being investigated -- be sure to thoroughly describe the problem. We appreciate all your feedback.")
-                                .font(.footnote)
-                                .foregroundColor(.secondary)
-                                .padding(.top, 24)
                     
                     Text("There are plenty more updates to come this season!")
                                 .font(.footnote)

@@ -10,7 +10,7 @@ import SwiftUI
 struct RootView: View {
     @ObservedObject var auth = AuthManager.shared
     @AppStorage("hasSeenOnboarding") var hasSeenOnboarding = false
-    @AppStorage("hasSeen1.0.6") private var hasSeenUpdate = false
+    @AppStorage("hasSeen1.0.7") private var hasSeenUpdate = false
     
     var body: some View {
         Group {
