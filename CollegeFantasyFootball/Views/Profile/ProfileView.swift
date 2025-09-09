@@ -56,6 +56,12 @@ struct ProfileView: View {
                     .padding(.horizontal)
                     .keyboardType(.asciiCapable)
                 
+                Text("Submitting this issue will also send recent app logs to help us debug your report.")
+                    .font(.footnote)
+                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal)
+                
                 Button {
                     Task {
                         await vm.submitIssuePressed()
