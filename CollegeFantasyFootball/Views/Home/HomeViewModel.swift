@@ -18,6 +18,11 @@ class HomeViewModel: BaseViewModel {
         games.filter { game in
             game.week == weekSelection
         }
+        .sorted { game1, game2 in
+            game1.startDate ?? Date.distantFuture
+            <
+            game2.startDate ?? Date.distantFuture
+        }
     }
     
     @Published var weekSelection = 1
