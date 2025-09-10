@@ -103,7 +103,7 @@ struct AddPlayerRowView: View {
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                 
-                Text("\(vm.getOpponent(for: player) ?? "")")
+                Text("\(vm.getOpponent(for: player) ?? "BYE")")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
             }
