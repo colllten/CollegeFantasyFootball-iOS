@@ -108,10 +108,14 @@ class ProfileViewModel: BaseViewModel {
         LoggingManager
             .logInfo("Submitting issue")
         
+        let logStrs = LoggingManager.getLogs().map { log in
+            log.message
+        }
+        
         let issue = Issue(
             id: UUID(),
             userId: AuthManager.shared.currentUserId!,
-            issueText: issueText)
+            issueText: issueText + "; LOGS: \(logStrs)")
         
         try await supabase
             .from("Issue")
