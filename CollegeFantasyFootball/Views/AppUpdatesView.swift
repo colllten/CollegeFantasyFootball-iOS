@@ -10,23 +10,23 @@ import SwiftUI
 struct AppUpdatesView: View {
     @Environment(\.dismiss) var dismiss
     
-    private let updateKey = "hasSeen1.0.7"
+    private let updateKey = "hasSeen1.0.8"
     
-    @State private var hasSeenUpdate: Bool = UserDefaults.standard.bool(forKey: "hasSeen1.0.7")
+    @State private var hasSeenUpdate: Bool = UserDefaults.standard.bool(forKey: "hasSeen1.0.8")
     
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
-                    Text("What’s New in 1.0.7")
+                    Text("What’s New in 1.0.8")
                         .font(.title)
                         .fontWeight(.bold)
                     
                     VStack(alignment: .leading, spacing: 12) {
-                        UpdateRow(text: "Added OTP sign in")
-                        UpdateRow(text: "Added in-season fantasy league settings")
-                        UpdateRow(text: "Edit Lineup UI improvements")
-                        UpdateRow(text: "Added a player's opponent when selecting them to a lineup")
+                        UpdateRow(text: "Enhanced fantasy game lineup UI to include player headshot and school")
+                        UpdateRow(text: "Added live game scoring on home screen")
+                        UpdateRow(text: "Improved profile screen")
+                        UpdateRow(text: "Included logs when submitting an issue")
                     }
                     
                     Text("There are plenty more updates to come this season!")
