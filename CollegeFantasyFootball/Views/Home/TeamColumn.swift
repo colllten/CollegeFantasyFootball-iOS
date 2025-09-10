@@ -10,6 +10,7 @@ import SwiftUI
 struct TeamColumn: View {
     let team: Team
     let url: URL?
+    let score: UInt?
     
     var body: some View {
         VStack {
@@ -19,7 +20,6 @@ struct TeamColumn: View {
                     .scaledToFill()
                     .frame(width: 40, height: 40)
                     .clipShape(RoundedRectangle(cornerRadius: 4))
-                
             } else {
                 AsyncImage(url: url) { phase in
                     switch phase {
@@ -43,15 +43,18 @@ struct TeamColumn: View {
                     }
                 }
             }
-
+            
             Text(team.school)
                 .font(.subheadline)
                 .multilineTextAlignment(.center)
                 .frame(maxWidth: 100)
+            
+            // Show score if available
+            if let score = score {
+                Text("\(score)")
+                    .font(.headline)
+                    .foregroundColor(.primary)
+            }
         }
     }
 }
-
-//#Preview {
-//    TeamColumn()
-//}
