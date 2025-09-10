@@ -38,6 +38,7 @@ class FantasyGameViewModel: BaseViewModel {
             fantasyGame = try await fetchFantasyGame()
             homeLineup = try await fetchFantasyLineup(userId: fantasyGame.homeUser!.id)
             awayLineup = try await fetchFantasyLineup(userId: fantasyGame.awayUser!.id)
+//            awayLineup = try await fetchFantasyLineup(userId: UUID(uuidString: "c4c4c021-ab95-468b-be84-446bee70f21c")!)
             
             homeLineupStats = try await fetchLineupStats(lineup: homeLineup)
                 .filter({ gameStats in
@@ -55,6 +56,24 @@ class FantasyGameViewModel: BaseViewModel {
                 .logError("Error loading data: \(error)")
             alertMessage = "Error loading data"
             showAlert = true
+        }
+    }
+    
+    public func pointsString(for player : Player?) -> String {
+        if player == nil { return "-" }
+        
+        var gameStats = homeLineupStats.first { stats in
+            stats.player.id == player?.id
+        }
+        if gameStats == nil {
+            gameStats = awayLineupStats.first { stats in
+                stats.player.id == player?.id
+            }
+        }
+        
+        if let pts = gameStats?.fantasyPoints(league: fantasyGame.fantasyLeague) { return String(format: "%.1f", pts)
+        } else {
+            return "—"
         }
     }
     
@@ -212,5 +231,18 @@ extension FantasyGameViewModel {
             return "\(stats.passingYds)"
         }
         return "0"
+    }
+    
+    func fetchPlayerImageUrl(playerId: Int) -> URL? {
+        do {
+            return try supabase
+                .storage
+                .from("player-headshots")
+                .getPublicURL(path: "\(playerId).png")
+        } catch {
+            LoggingManager
+                .logError("Error getting URL for player \(playerId)")
+        }
+        return nil
     }
 }

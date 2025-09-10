@@ -6,87 +6,12 @@ struct FantasyGameView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 16) {
-                header.padding(.horizontal)
+                header
+                    .padding(.horizontal)
                 
                 VStack(spacing: 10) {
                     ForEach(lineupRows, id: \.label) { row in
-                        HStack(alignment: .center) {
-                            if row.awayPlayer == nil {
-                                if vm.awayLineup.user.id == AuthManager.shared.currentUserId! {
-                                    Text("Add to lineup")
-                                        .frame(maxWidth: .infinity, alignment: .center)
-                                        .onTapGesture {
-                                            vm.selectedPosition = row.label
-                                            vm.selectedLineup = vm.awayLineup
-                                            vm.showAddPlayerToLineupSheet = true
-                                        }
-                                        .onChange(of: vm.showAddPlayerToLineupSheet, { old, new in
-                                            if new == false {
-                                                Task {
-                                                    await vm.loadData()
-                                                }
-                                            }
-                                        })
-                                } else {
-                                    Text("Empty")
-                                        .frame(maxWidth: .infinity, alignment: .center)
-                                }
-                            } else {
-                                HStack(spacing: 6) {
-                                    Text(pointsString(for: row.awayPlayer))
-                                        .font(.subheadline)
-                                        .monospacedDigit()
-                                        .frame(minWidth: 28, alignment: .trailing)
-                                    Spacer()
-                                    Text(name(for: row.awayPlayer))
-                                        .font(.subheadline)
-                                }
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                            }
-                            
-                            Text(row.label)
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                                .frame(width: 44)
-                            
-                            if row.homePlayer == nil {
-                                if vm.homeLineup.user.id == AuthManager.shared.currentUserId! {
-                                    Text("Add to lineup")
-                                        .frame(maxWidth: .infinity, alignment: .center)
-                                        .onTapGesture {
-                                            vm.selectedPosition = row.label
-                                            vm.selectedLineup = vm.homeLineup
-                                            vm.showAddPlayerToLineupSheet = true
-                                        }
-                                        .onChange(of: vm.showAddPlayerToLineupSheet, { old, new in
-                                            if new == false {
-                                                Task {
-                                                    await vm.loadData()
-                                                }
-                                            }
-                                        })
-                                } else {
-                                    Text("Empty")
-                                        .frame(maxWidth: .infinity, alignment: .center)
-                                }
-                            } else {
-                                HStack(spacing: 6) {
-                                    Text(pointsString(for: row.homePlayer))
-                                        .font(.subheadline)
-                                        .monospacedDigit()
-                                        .frame(minWidth: 28, alignment: .leading)
-                                    Spacer()
-                                    Text(name(for: row.homePlayer))
-                                        .font(.subheadline)
-                                }
-                                .frame(maxWidth: .infinity, alignment: .trailing)
-                            }
-                        }
-                        .padding(.vertical, 8)
-                        .padding(.horizontal, 12)
-                        .frame(height: 75)
-                        .background(Color(.secondarySystemBackground))
-                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                        LineupRowView(row: row, vm: vm)
                     }
                 }
                 .padding(.horizontal)
@@ -112,7 +37,6 @@ struct FantasyGameView: View {
     }
     
     private var header: some View {
-        // Scores: away left, home right
         VStack(spacing: 8) {
             HStack {
                 VStack(alignment: .leading, spacing: 2) {
@@ -141,7 +65,7 @@ struct FantasyGameView: View {
         }
     }
     
-    private struct LineupRow {
+    fileprivate struct LineupRow {
         let label: String
         let homePlayer: Player?
         let awayPlayer: Player?
@@ -160,40 +84,161 @@ struct FantasyGameView: View {
         ]
     }
     
-    private func name(for player: Player?) -> String {
-        player?.fullName ?? "—"
-    }
-    
     private func pointsString(for player: Player?) -> String {
-        if player == nil {
-            return "-"
-        }
+        guard let player else { return "-" }
         
-        var gameStats = vm.homeLineupStats.first { stats in
-            stats.player.id == player?.id
-        }
+        var gameStats = vm.homeLineupStats.first { $0.player.id == player.id }
         if gameStats == nil {
-            gameStats = vm.awayLineupStats.first { stats in
-                stats.player.id == player?.id
-            }
+            gameStats = vm.awayLineupStats.first { $0.player.id == player.id }
         }
         
         if let pts = gameStats?.fantasyPoints(league: vm.fantasyGame.fantasyLeague) {
             return String(format: "%.1f", pts)
-        } else {
-            return "—"
         }
-        
+        return "—"
     }
     
     private func scoreString(isHome: Bool) -> String {
-        var points = 0.0
-        
         let lineup = isHome ? vm.homeLineupStats : vm.awayLineupStats
-        for stats in lineup {
-            points += stats.fantasyPoints(league: vm.fantasyGame.fantasyLeague)
+        let total = lineup.reduce(0.0) { $0 + $1.fantasyPoints(league: vm.fantasyGame.fantasyLeague) }
+        return String(format: "%.1f", total)
+    }
+}
+
+// MARK: - Subviews
+
+private struct LineupRowView: View {
+    let row: FantasyGameView.LineupRow
+    @ObservedObject var vm: FantasyGameViewModel
+    
+    var body: some View {
+        HStack(alignment: .center) {
+            playerCell(for: row.awayPlayer, lineup: vm.awayLineup, isHome: false)
+            
+            Text(row.label)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .frame(minWidth: 30)
+            
+            playerCell(for: row.homePlayer, lineup: vm.homeLineup, isHome: true)
         }
-        
-        return String(format: "%.1f", points)
+        .padding(.vertical, 8)
+        .padding(.horizontal, 12)
+        .frame(height: 75)
+        .background(Color(.secondarySystemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 10))
+    }
+    
+    @ViewBuilder
+    private func playerCell(for player: Player?, lineup: FantasyLineupDto, isHome: Bool) -> some View {
+        if let player {
+            HStack(spacing: 6) {
+                if isHome {
+                    Text(formattedPoints(for: player))
+                        .font(.subheadline)
+                        .monospacedDigit()
+                        .frame(minWidth: 25, alignment: isHome ? .leading : .trailing)
+                    Spacer()
+                }
+                
+                PlayerGameView(player: player,
+                               url: vm.fetchPlayerImageUrl(playerId: player.id),
+                               isHome: isHome)
+                if !isHome {
+                    Spacer()
+                    Text(formattedPoints(for: player))
+                        .font(.subheadline)
+                        .monospacedDigit()
+                        .frame(minWidth: 25, alignment: isHome ? .leading : .trailing)
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: isHome ? .trailing : .leading)
+        } else {
+            if lineup.user.id == AuthManager.shared.currentUserId! {
+                Text("Add to lineup")
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .onTapGesture {
+                        vm.selectedPosition = row.label
+                        vm.selectedLineup = lineup
+                        vm.showAddPlayerToLineupSheet = true
+                    }
+                    .onChange(of: vm.showAddPlayerToLineupSheet) { _, new in
+                        if !new { Task { await vm.loadData() } }
+                    }
+            } else {
+                Text("Empty")
+                    .frame(maxWidth: .infinity, alignment: .center)
+            }
+        }
+    }
+    
+    private func formattedPoints(for player: Player?) -> String {
+        vm.pointsString(for: player)
+    }
+}
+
+// MARK: - PlayerGameView
+
+private struct PlayerGameView: View {
+    let player: Player
+    let url: URL?
+    let isHome: Bool
+    
+    var body: some View {
+        HStack(spacing: 12) {
+            if !isHome {
+                playerHeadshot
+            }
+            
+            VStack(alignment: .leading, spacing: 4) {
+                Text("\(player.firstName.first!). \(player.lastName)")
+                    .font(.caption)
+                
+                Text("\(idSchoolPairs[player.teamId]!)")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+            }
+            
+            if isHome {
+                playerHeadshot
+            }
+        }
+        .padding(.vertical, 6)
+    }
+    
+    private var playerHeadshot: some View {
+        AsyncImage(url: url) { phase in
+            switch phase {
+            case .empty:
+                avatarPlaceholder
+            case .success(let image):
+                image
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 44, height: 44)
+                    .clipShape(RoundedRectangle(cornerRadius: 10))
+            case .failure:
+                avatarPlaceholder
+            @unknown default:
+                avatarPlaceholder
+            }
+        }
+    }
+    
+    private func initials(from player: Player) -> String {
+        let firstInitial = player.firstName.first.map(String.init) ?? ""
+        let lastInitial = player.lastName.first.map(String.init) ?? ""
+        return firstInitial + lastInitial
+    }
+    
+    private var avatarPlaceholder: some View {
+        ZStack {
+            Circle()
+                .fill(Color.gray.opacity(0.15))
+                .frame(width: 44, height: 44)
+            Text(initials(from: player))
+                .font(.subheadline.weight(.semibold))
+                .foregroundColor(.gray)
+        }
     }
 }
