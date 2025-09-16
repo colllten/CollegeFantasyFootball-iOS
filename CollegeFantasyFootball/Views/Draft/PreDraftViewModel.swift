@@ -63,7 +63,7 @@ class PreDraftViewModel: BaseViewModel {
         } catch {
             LoggingManager
                 .logError("Error starting draft: \(error)")
-            alertMessage = "Error starting draft. Please try again"
+            alertMessage = "Error starting draft. Please submit a bug report from your profile."
             showAlert = true
         }
         isLoading = false
