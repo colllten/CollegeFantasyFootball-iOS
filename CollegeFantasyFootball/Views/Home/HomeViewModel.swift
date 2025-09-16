@@ -92,6 +92,11 @@ class HomeViewModel: BaseViewModel {
         }
     }
     
+    public func disabledCreateLeagueTapped() {
+        alertMessage = "League creation has been disabled for the remainder of the year."
+        showAlert = true
+    }
+    
     private func fetchLatestAppMetadata() async throws -> [AppMetadata] {
         LoggingManager
             .logInfo("Fetching latest app metadata")
