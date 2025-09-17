@@ -9,7 +9,7 @@ import Foundation
 
 public struct FantasyLeague: Codable {
     /// Unique ID
-    let id: UUID
+    var id: UUID
     /// User ID of the fantasy league owner
     var ownerId = ""
     /// Current fantasy league season

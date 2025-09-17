@@ -15,16 +15,7 @@ struct CreateFantasyLeagueSheetView: View {
         Form {
             HStack {
                 Spacer()
-                Button {
-                    Task {
-                        await vm.tryCreateFantasyLeague()
-                    }
-                } label: {
-                    Text("Create League")
-                        .foregroundColor(.blue)
-                        .fontWeight(.bold)
-                        .frame(maxWidth: .infinity)
-                }
+                createFantasyLeagueButton
                 Spacer()
             }
             Section {
@@ -136,6 +127,19 @@ struct CreateFantasyLeagueSheetView: View {
         .keyboardType(.decimalPad)
         .foregroundStyle(vm.fantasyLeague.customizePoints ? .primary : .secondary)
         .disabled(!vm.fantasyLeague.customizePoints)
+    }
+    
+    private var createFantasyLeagueButton: some View {
+        Button {
+            Task {
+                await vm.tryCreateFantasyLeague()
+            }
+        } label: {
+            Text("Create League")
+                .foregroundColor(.blue)
+                .fontWeight(.bold)
+                .frame(maxWidth: .infinity)
+        }
     }
 }
 

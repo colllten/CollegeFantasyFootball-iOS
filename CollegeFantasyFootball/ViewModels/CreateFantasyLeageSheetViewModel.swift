@@ -26,6 +26,8 @@ class CreateFantasyLeageSheetViewModel: BaseViewModel {
                 .id
                 .uuidString
             
+            fantasyLeague.id = UUID()
+            
             try await addFantasyLeagueToDb()
             try await addOwnerLeagueRelationToDb()
             
