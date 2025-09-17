@@ -26,7 +26,12 @@ struct HomeView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 16))
                 .shadow(radius: 5)
                 .padding(.horizontal)
-                .disabled(isPastDeadline) // 👈 disable past Aug 29
+                .onTapGesture {
+                    if isPastDeadline {
+                        vm.disabledCreateLeagueTapped()
+                    }
+                }
+                .disabled(isPastDeadline)
                 .opacity(isPastDeadline ? 0.5 : 1)
         }
         .toolbar {
@@ -103,6 +108,10 @@ struct HomeView: View {
                     .padding(.horizontal, 8)
                 }
                 .buttonStyle(PlainButtonStyle())
+                .disabled(true)
+                .onTapGesture {
+                    vm.disabledCreateLeagueTapped()
+                }
             } else {
                 LeaguesCarousel(fantasyLeagues: vm.fantasyLeagues.sorted { $0.leagueName < $1.leagueName })
                     .padding(.horizontal, 8)
