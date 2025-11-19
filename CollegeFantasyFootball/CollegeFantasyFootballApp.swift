@@ -18,10 +18,7 @@ struct CollegeFantasyFootballApp: App {
     var body: some Scene {
         WindowGroup {
             NavigationStack {
-                RootView()
-                    .task {
-                        await AuthManager.shared.loadSession()
-                    }
+                SeasonClosingView()
             }
         }
     }
