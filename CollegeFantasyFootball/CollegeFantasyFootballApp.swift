@@ -1,24 +1,20 @@
-//
-//  CollegeFantasyFootballApp.swift
-//  CollegeFantasyFootball
-//
-//  Created by Colten Glover on 4/7/25.
-//
-
 import SwiftUI
+import FactoryKit
 
 @main
 struct CollegeFantasyFootballApp: App {
-    init() {
-        UserDefaults.standard.register(defaults: [
-            "season": 2025,
-        ])
-    }
+    @State private var sessionManager = Container.shared.sessionManager()
     
     var body: some Scene {
         WindowGroup {
             NavigationStack {
-                SeasonClosingView()
+                ZStack {
+                    Color.backgroundMain
+                        .ignoresSafeArea()
+                    
+                    RootViewV2()
+                        .environment(sessionManager)
+                }
             }
         }
     }

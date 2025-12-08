@@ -9,8 +9,8 @@ import Foundation
 import Supabase
 
 protocol AuthServiceProtocol {
-    
     func signIn(email: String, password: String) async throws -> Session
-    
     func signOut() async throws
+    
+    func forgotPassword(email: String) async throws
 }
