@@ -1,10 +1,3 @@
-//
-//  AuthService.swift
-//  CollegeFantasyFootball
-//
-//  Created by Colten Glover on 11/9/25.
-//
-
 import Foundation
 import Supabase
 
@@ -25,5 +18,11 @@ public class AuthService: AuthServiceProtocol {
         try await client
             .auth
             .signOut()
+    }
+    
+    func forgotPassword(email: String) async throws {
+        try await client
+            .auth
+            .resetPasswordForEmail(email)
     }
 }

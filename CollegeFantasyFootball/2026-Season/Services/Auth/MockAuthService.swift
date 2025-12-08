@@ -8,21 +8,25 @@
 import Foundation
 import Supabase
 
-// TODO: Run local Supabase and connect to it
-
+// TODO: Run local Supabase
 final class MockAuthService: AuthServiceProtocol {
-    private let client = SupabaseClient(supabaseURL: URL(string: Secrets.SUPABASE_URL)!,
-                                        supabaseKey: Secrets.SUPABASE_KEY)
-    
+    private let mockSession = Session(
+        accessToken: "",
+        tokenType: "",
+        expiresIn: .nan,
+        expiresAt: .nan,
+        refreshToken: "",
+        user: Auth.User(id: UUID(),
+                        appMetadata: [:],
+                        userMetadata: [:],
+                        aud: "",
+                        createdAt: .now,
+                        updatedAt: .now))
     func signIn(email: String, password: String) async throws -> Session {
-        return try await client
-            .auth
-            .signIn(email: email, password: password)
+        return mockSession
     }
 
-    func signOut() async throws {
-        try await client
-            .auth
-            .signOut()
-    }
+    func signOut() async throws { }
+    
+    func forgotPassword(email: String) async throws { }
 }

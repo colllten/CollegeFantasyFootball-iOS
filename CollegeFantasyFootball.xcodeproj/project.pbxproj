@@ -14,6 +14,9 @@
 		D17D306F2DA49A690092CE45 /* Storage in Frameworks */ = {isa = PBXBuildFile; productRef = D17D306E2DA49A690092CE45 /* Storage */; };
 		D17D30712DA49A690092CE45 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = D17D30702DA49A690092CE45 /* Supabase */; };
 		D17D30742DA49A840092CE45 /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = D17D30732DA49A840092CE45 /* SDWebImageSwiftUI */; };
+		D1EC7C7E2ECF9C1D007434AB /* KeychainSwift in Frameworks */ = {isa = PBXBuildFile; productRef = D1EC7C7D2ECF9C1D007434AB /* KeychainSwift */; };
+		D1EC7C8A2ED0CF5D007434AB /* FactoryKit in Frameworks */ = {isa = PBXBuildFile; productRef = D1EC7C892ED0CF5D007434AB /* FactoryKit */; };
+		D1EC7C8C2ED0CF5D007434AB /* FactoryTesting in Frameworks */ = {isa = PBXBuildFile; productRef = D1EC7C8B2ED0CF5D007434AB /* FactoryTesting */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -39,9 +42,22 @@
 		D17D30522DA499970092CE45 /* CollegeFantasyFootballUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CollegeFantasyFootballUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		D1EC7C802ECFF87B007434AB /* Exceptions for "CollegeFantasyFootball" folder in "CollegeFantasyFootball" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = D17D303A2DA499950092CE45 /* CollegeFantasyFootball */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		D17D303D2DA499950092CE45 /* CollegeFantasyFootball */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				D1EC7C802ECFF87B007434AB /* Exceptions for "CollegeFantasyFootball" folder in "CollegeFantasyFootball" target */,
+			);
 			path = CollegeFantasyFootball;
 			sourceTree = "<group>";
 		};
@@ -65,9 +81,11 @@
 				D17D30742DA49A840092CE45 /* SDWebImageSwiftUI in Frameworks */,
 				D17D306B2DA49A690092CE45 /* PostgREST in Frameworks */,
 				D17D30692DA49A690092CE45 /* Functions in Frameworks */,
+				D1EC7C8A2ED0CF5D007434AB /* FactoryKit in Frameworks */,
 				D17D30712DA49A690092CE45 /* Supabase in Frameworks */,
 				D17D30672DA49A690092CE45 /* Auth in Frameworks */,
 				D17D306F2DA49A690092CE45 /* Storage in Frameworks */,
+				D1EC7C7E2ECF9C1D007434AB /* KeychainSwift in Frameworks */,
 				D17D306D2DA49A690092CE45 /* Realtime in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -76,6 +94,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D1EC7C8C2ED0CF5D007434AB /* FactoryTesting in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -136,6 +155,8 @@
 				D17D306E2DA49A690092CE45 /* Storage */,
 				D17D30702DA49A690092CE45 /* Supabase */,
 				D17D30732DA49A840092CE45 /* SDWebImageSwiftUI */,
+				D1EC7C7D2ECF9C1D007434AB /* KeychainSwift */,
+				D1EC7C892ED0CF5D007434AB /* FactoryKit */,
 			);
 			productName = CollegeFantasyFootball;
 			productReference = D17D303B2DA499950092CE45 /* CollegeFantasyFootball.app */;
@@ -159,6 +180,7 @@
 			);
 			name = CollegeFantasyFootballTests;
 			packageProductDependencies = (
+				D1EC7C8B2ED0CF5D007434AB /* FactoryTesting */,
 			);
 			productName = CollegeFantasyFootballTests;
 			productReference = D17D30482DA499970092CE45 /* CollegeFantasyFootballTests.xctest */;
@@ -222,6 +244,8 @@
 			packageReferences = (
 				D17D30652DA49A690092CE45 /* XCRemoteSwiftPackageReference "supabase-swift" */,
 				D17D30722DA49A840092CE45 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */,
+				D1EC7C7C2ECF9C1D007434AB /* XCRemoteSwiftPackageReference "keychain-swift" */,
+				D1EC7C882ED0CF5D007434AB /* XCRemoteSwiftPackageReference "Factory" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = D17D303C2DA499950092CE45 /* Products */;
@@ -356,6 +380,8 @@
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
+				SUPABASE_PUBLISHABLE_KEY = sb_publishable_oMSbgY2czlqQ3Nlkc7xpjA_Q0o2kNnn;
+				SUPABASE_URL = "https://hebkomjefcdetcamnnpa.supabase.co";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -413,6 +439,8 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
+				SUPABASE_PUBLISHABLE_KEY = sb_publishable_oMSbgY2czlqQ3Nlkc7xpjA_Q0o2kNnn;
+				SUPABASE_URL = "https://hebkomjefcdetcamnnpa.supabase.co";
 				SWIFT_COMPILATION_MODE = wholemodule;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -428,9 +456,11 @@
 				DEVELOPMENT_TEAM = 95W4AVBLWA;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = CollegeFantasyFootball/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "College Fantasy Football";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.sports";
 				INFOPLIST_KEY_NSCalendarsUsageDescription = "This app requires calendar access to add your fantasy draft date to your calendar.";
+				INFOPLIST_KEY_NSFaceIDUsageDescription = "Face ID is used to sign in.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -464,9 +494,11 @@
 				DEVELOPMENT_TEAM = 95W4AVBLWA;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = CollegeFantasyFootball/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "College Fantasy Football";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.sports";
 				INFOPLIST_KEY_NSCalendarsUsageDescription = "This app requires calendar access to add your fantasy draft date to your calendar.";
+				INFOPLIST_KEY_NSFaceIDUsageDescription = "Face ID is used to sign in.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -636,6 +668,22 @@
 				minimumVersion = 3.1.3;
 			};
 		};
+		D1EC7C7C2ECF9C1D007434AB /* XCRemoteSwiftPackageReference "keychain-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/evgenyneu/keychain-swift.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 24.0.0;
+			};
+		};
+		D1EC7C882ED0CF5D007434AB /* XCRemoteSwiftPackageReference "Factory" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/hmlongco/Factory";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.5.3;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -673,6 +721,21 @@
 			isa = XCSwiftPackageProductDependency;
 			package = D17D30722DA49A840092CE45 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */;
 			productName = SDWebImageSwiftUI;
+		};
+		D1EC7C7D2ECF9C1D007434AB /* KeychainSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D1EC7C7C2ECF9C1D007434AB /* XCRemoteSwiftPackageReference "keychain-swift" */;
+			productName = KeychainSwift;
+		};
+		D1EC7C892ED0CF5D007434AB /* FactoryKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D1EC7C882ED0CF5D007434AB /* XCRemoteSwiftPackageReference "Factory" */;
+			productName = FactoryKit;
+		};
+		D1EC7C8B2ED0CF5D007434AB /* FactoryTesting */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D1EC7C882ED0CF5D007434AB /* XCRemoteSwiftPackageReference "Factory" */;
+			productName = FactoryTesting;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
