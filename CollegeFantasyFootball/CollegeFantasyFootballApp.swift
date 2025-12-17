@@ -1,6 +1,5 @@
 import SwiftUI
 import FactoryKit
-import Foundation
 
 @main
 struct CollegeFantasyFootballApp: App {

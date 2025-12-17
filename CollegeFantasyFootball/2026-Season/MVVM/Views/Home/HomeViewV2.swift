@@ -1,5 +1,4 @@
 import SwiftUI
-import Supabase
 
 enum Route: Hashable {
     case createLeague
