@@ -7,7 +7,7 @@ final class HomeViewModelV2: BaseViewModelV2 {
     private var sessionManager = Container.shared.sessionManager()
     private var auth = Container.shared.authService()
     private var logger = Container.shared.logger()
-    
+        
     var session: Session
     
     init (session: Session) {
