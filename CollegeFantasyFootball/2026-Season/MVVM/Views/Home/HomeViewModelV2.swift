@@ -8,6 +8,8 @@ final class HomeViewModelV2: BaseViewModelV2 {
     private var auth = Container.shared.authService()
     private var logger = Container.shared.logger()
     
+    var showCreateLeagueForm = false
+    
     var session: Session
     
     init (session: Session) {
