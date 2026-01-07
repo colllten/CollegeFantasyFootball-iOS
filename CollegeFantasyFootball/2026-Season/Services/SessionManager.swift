@@ -1,16 +1,17 @@
 import Foundation
 import Supabase
+import SwiftUI
 
 @Observable
 final class SessionManager {
-    private let supabase: SupabaseClient
+    private let supabaseClient: SupabaseClient
     private let logger: LoggingProtocol
     
     var session: Session?
-    var isLoading = true
     
-    init(supabase: SupabaseClient, logger: LoggingProtocol) {
-        self.supabase = supabase
+    init(supabase: SupabaseClient,
+         logger: LoggingProtocol) {
+        self.supabaseClient = supabase
         self.logger = logger
         
         Task {
@@ -23,20 +24,18 @@ final class SessionManager {
         logger.logInfo("Loading initial session.")
         
         do {
-            let s = try await supabase.auth.session
-            self.session = session
+            let s = try await supabaseClient.auth.session
+            self.session = s
             
             logger.logDebug("Session loaded.")
         } catch {
             self.session = nil
             logger.logError("Failed to load session: \(error)")
         }
-        
-        isLoading = false
     }
     
     private func listenForAuthChanges() async {
-        await supabase
+        await supabaseClient
             .auth
             .onAuthStateChange { [weak self] event, session in
                 guard let self else { return }

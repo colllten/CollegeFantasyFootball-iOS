@@ -101,6 +101,9 @@ extension SignInViewV2 {
             
             do {
                 sessionManager.session = try await signIn()
+                
+                logger.logInfo("Successfully signed in as \(email).")
+                
                 email = ""
                 password = ""
             } catch let error as AuthError {
@@ -111,7 +114,6 @@ extension SignInViewV2 {
                 logger.logWarning("Unknown auth error occurred: \(error)")
                 alertMessage = "Error"
                 showAlert = true
-                return
             }
         }
         
