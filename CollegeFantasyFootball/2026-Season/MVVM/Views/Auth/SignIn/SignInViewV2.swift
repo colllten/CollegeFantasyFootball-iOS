@@ -6,7 +6,6 @@ struct SignInViewV2: View {
     @State private var vm: ViewModel
     @Environment(SessionManager.self) var appSessionVm
     @FocusState private var fieldFocus: FocusedField?
-    @State private var animationAmount = 1.0
     
     enum FocusedField {
         case email, password
@@ -60,15 +59,6 @@ struct SignInViewV2: View {
         Image(systemName: "football.fill")
             .font(.system(size: 60))
             .foregroundStyle(.offWhite)
-            .rotation3DEffect(
-                .degrees(animationAmount),
-                axis: (x: 0.5, y: -0.5, z: 0),
-                perspective: 0.6
-            )
-            .animation(.easeIn(duration: 10)
-                .repeatForever(autoreverses: true),
-                value: animationAmount
-            )
     }
     
     private var appTitle: some View {
