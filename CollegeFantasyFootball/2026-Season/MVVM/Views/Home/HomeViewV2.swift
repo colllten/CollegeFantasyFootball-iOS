@@ -32,12 +32,15 @@ struct HomeViewV2: View {
     
     private var createLeagueFooterButton: some View {
         Button("Create League") {
-            // TODO
+            vm.showCreateLeagueView.toggle()
         }
         .font(.title3)
         .buttonStyle(.glassProminent)
         .tint(Color(red: 0.40, green: 0.65, blue: 0.45))
         .foregroundStyle(.offWhite)
+        .navigationDestination(isPresented: $vm.showCreateLeagueView) {
+            CreateFantasyLeagueSheetV2()
+        }
     }
     
     private var profileHeaderButton: some View {
